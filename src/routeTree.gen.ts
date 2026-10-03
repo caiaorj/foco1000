@@ -9,73 +9,90 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as FavoritosRouteImport } from './routes/favoritos'
-import { Route as NegocioRouteImport } from './routes/negocio'
-import { Route as ParticipantesRouteImport } from './routes/participantes'
-import { Route as RankingRouteImport } from './routes/ranking'
-import { Route as PerfilIdRouteImport } from './routes/perfil.$id'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedFavoritosRouteImport } from './routes/_authenticated/favoritos'
+import { Route as AuthenticatedNegocioRouteImport } from './routes/_authenticated/negocio'
+import { Route as AuthenticatedParticipantesRouteImport } from './routes/_authenticated/participantes'
+import { Route as AuthenticatedRankingRouteImport } from './routes/_authenticated/ranking'
+import { Route as AuthenticatedPerfilIdRouteImport } from './routes/_authenticated/perfil.$id'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const FavoritosRoute = FavoritosRouteImport.update({
+const AuthenticatedFavoritosRoute = AuthenticatedFavoritosRouteImport.update({
   id: '/favoritos',
   path: '/favoritos',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const NegocioRoute = NegocioRouteImport.update({
+const AuthenticatedNegocioRoute = AuthenticatedNegocioRouteImport.update({
   id: '/negocio',
   path: '/negocio',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ParticipantesRoute = ParticipantesRouteImport.update({
-  id: '/participantes',
-  path: '/participantes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RankingRoute = RankingRouteImport.update({
+const AuthenticatedParticipantesRoute =
+  AuthenticatedParticipantesRouteImport.update({
+    id: '/participantes',
+    path: '/participantes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRankingRoute = AuthenticatedRankingRouteImport.update({
   id: '/ranking',
   path: '/ranking',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const PerfilIdRoute = PerfilIdRouteImport.update({
+const AuthenticatedPerfilIdRoute = AuthenticatedPerfilIdRouteImport.update({
   id: '/perfil/$id',
   path: '/perfil/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/favoritos': typeof FavoritosRoute
-  '/negocio': typeof NegocioRoute
-  '/participantes': typeof ParticipantesRoute
-  '/ranking': typeof RankingRoute
-  '/perfil/$id': typeof PerfilIdRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/auth': typeof AuthRoute
+  '/favoritos': typeof AuthenticatedFavoritosRoute
+  '/negocio': typeof AuthenticatedNegocioRoute
+  '/participantes': typeof AuthenticatedParticipantesRoute
+  '/ranking': typeof AuthenticatedRankingRoute
+  '/perfil/$id': typeof AuthenticatedPerfilIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/favoritos': typeof FavoritosRoute
-  '/negocio': typeof NegocioRoute
-  '/participantes': typeof ParticipantesRoute
-  '/ranking': typeof RankingRoute
-  '/perfil/$id': typeof PerfilIdRoute
+  '/auth': typeof AuthRoute
+  '/favoritos': typeof AuthenticatedFavoritosRoute
+  '/negocio': typeof AuthenticatedNegocioRoute
+  '/participantes': typeof AuthenticatedParticipantesRoute
+  '/ranking': typeof AuthenticatedRankingRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/perfil/$id': typeof AuthenticatedPerfilIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/favoritos': typeof FavoritosRoute
-  '/negocio': typeof NegocioRoute
-  '/participantes': typeof ParticipantesRoute
-  '/ranking': typeof RankingRoute
-  '/perfil/$id': typeof PerfilIdRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/favoritos': typeof AuthenticatedFavoritosRoute
+  '/_authenticated/negocio': typeof AuthenticatedNegocioRoute
+  '/_authenticated/participantes': typeof AuthenticatedParticipantesRoute
+  '/_authenticated/ranking': typeof AuthenticatedRankingRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/perfil/$id': typeof AuthenticatedPerfilIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/favoritos'
     | '/negocio'
     | '/participantes'
@@ -83,85 +100,115 @@ export interface FileRouteTypes {
     | '/perfil/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/auth'
     | '/favoritos'
     | '/negocio'
     | '/participantes'
     | '/ranking'
+    | '/'
     | '/perfil/$id'
   id:
     | '__root__'
-    | '/'
-    | '/favoritos'
-    | '/negocio'
-    | '/participantes'
-    | '/ranking'
-    | '/perfil/$id'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/favoritos'
+    | '/_authenticated/negocio'
+    | '/_authenticated/participantes'
+    | '/_authenticated/ranking'
+    | '/_authenticated/'
+    | '/_authenticated/perfil/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  FavoritosRoute: typeof FavoritosRoute
-  NegocioRoute: typeof NegocioRoute
-  ParticipantesRoute: typeof ParticipantesRoute
-  RankingRoute: typeof RankingRoute
-  PerfilIdRoute: typeof PerfilIdRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/favoritos': {
-      id: '/favoritos'
+    '/_authenticated/favoritos': {
+      id: '/_authenticated/favoritos'
       path: '/favoritos'
       fullPath: '/favoritos'
-      preLoaderRoute: typeof FavoritosRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedFavoritosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/negocio': {
-      id: '/negocio'
+    '/_authenticated/negocio': {
+      id: '/_authenticated/negocio'
       path: '/negocio'
       fullPath: '/negocio'
-      preLoaderRoute: typeof NegocioRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedNegocioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/participantes': {
-      id: '/participantes'
+    '/_authenticated/participantes': {
+      id: '/_authenticated/participantes'
       path: '/participantes'
       fullPath: '/participantes'
-      preLoaderRoute: typeof ParticipantesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedParticipantesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/ranking': {
-      id: '/ranking'
+    '/_authenticated/ranking': {
+      id: '/_authenticated/ranking'
       path: '/ranking'
       fullPath: '/ranking'
-      preLoaderRoute: typeof RankingRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedRankingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/perfil/$id': {
-      id: '/perfil/$id'
+    '/_authenticated/perfil/$id': {
+      id: '/_authenticated/perfil/$id'
       path: '/perfil/$id'
       fullPath: '/perfil/$id'
-      preLoaderRoute: typeof PerfilIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedPerfilIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedFavoritosRoute: typeof AuthenticatedFavoritosRoute
+  AuthenticatedNegocioRoute: typeof AuthenticatedNegocioRoute
+  AuthenticatedParticipantesRoute: typeof AuthenticatedParticipantesRoute
+  AuthenticatedRankingRoute: typeof AuthenticatedRankingRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedPerfilIdRoute: typeof AuthenticatedPerfilIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedFavoritosRoute: AuthenticatedFavoritosRoute,
+  AuthenticatedNegocioRoute: AuthenticatedNegocioRoute,
+  AuthenticatedParticipantesRoute: AuthenticatedParticipantesRoute,
+  AuthenticatedRankingRoute: AuthenticatedRankingRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedPerfilIdRoute: AuthenticatedPerfilIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  FavoritosRoute: FavoritosRoute,
-  NegocioRoute: NegocioRoute,
-  ParticipantesRoute: ParticipantesRoute,
-  RankingRoute: RankingRoute,
-  PerfilIdRoute: PerfilIdRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

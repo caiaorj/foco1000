@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Pencil, Share2, X } from "lucide-react";
-import { brl, CURRENT_USER_ID, quando, totalDe, useStore } from "@/lib/store";
+import { brl, quando, totalDe, useStore } from "@/lib/store";
 import { AnnouncementBanner, Card, Progress } from "@/components/app/ui-bits";
 import { ShareCard } from "@/components/app/ShareCard";
 
-export const Route = createFileRoute("/negocio")({
+export const Route = createFileRoute("/_authenticated/negocio")({
   head: () => ({
     meta: [
       { title: "Meu Negócio — Foco Mil Reais" },
@@ -20,11 +20,11 @@ export const Route = createFileRoute("/negocio")({
 const inp = "mt-1.5 w-full border border-input bg-muted/60 p-2.5 text-sm outline-none focus:border-foreground";
 
 function MeuNegocio() {
-  const { negocios, checkins, updateNegocio } = useStore();
-  const neg = negocios.find((n) => n.membroId === CURRENT_USER_ID)!;
-  const total = totalDe(checkins, CURRENT_USER_ID);
+  const { negocios, checkins, updateNegocio, meId } = useStore();
+  const neg = negocios.find((n) => n.membroId === meId) ?? { membroId: meId, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: 1000 };
+  const total = totalDe(checkins, meId);
   const pct = Math.min(100, (total / neg.meta) * 100);
-  const meus = checkins.filter((c) => c.membroId === CURRENT_USER_ID);
+  const meus = checkins.filter((c) => c.membroId === meId);
   const [edit, setEdit] = useState(false);
   const [share, setShare] = useState(false);
   const [form, setForm] = useState(neg);

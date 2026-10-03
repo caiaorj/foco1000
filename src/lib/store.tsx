@@ -1,9 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+// Os tipos gerados do banco são atualizados quando o SQL de setup é aplicado;
+// até lá, usamos o cliente sem tipagem estrita nas tabelas.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sb = supabase as unknown as SupabaseClient<any>;
 
 export const META_PADRAO = 1000;
-export const CURRENT_USER_ID = "u-me";
 
-export type Membro = { id: string; nome: string; sequenciaBase: number };
+export type Membro = { id: string; nome: string };
 export type Negocio = { membroId: string; nome: string; descricao: string; nicho: string; meta: number };
 export type Reacao = "palmas" | "bora" | "executou";
 export type CheckIn = {
@@ -11,11 +17,11 @@ export type CheckIn = {
   membroId: string;
   data: string; // ISO
   texto: string;
-  deuCerto?: string;
-  deuErrado?: string;
+  deuCerto?: string | undefined;
+  deuErrado?: string | undefined;
   valor: number;
-  horas?: number;
-  foto?: string;
+  horas?: number | undefined;
+  foto?: string | undefined;
   reacoes: Record<Reacao, number>;
   minhas: Reacao[];
 };
@@ -23,88 +29,95 @@ export type Live = { titulo: string; quando: string; link: string };
 
 type DB = { membros: Membro[]; negocios: Negocio[]; checkins: CheckIn[]; favoritos: string[]; live: Live };
 
-const STORAGE_KEY = "foco-mil-reais:v2";
+const LIVE: Live = {
+  titulo: "Precificação sem medo: como cobrar sem pedir desconto",
+  quando: "Sexta-feira, 9 de outubro · 19h30 (horário de Brasília)",
+  link: "#",
+};
 
-function seed(): DB {
-  const now = Date.now();
-  const d = (diasAtras: number, h = 0) => new Date(now - diasAtras * 864e5 - h * 36e5).toISOString();
-  const r = (palmas: number, bora: number, executou: number) => ({ palmas, bora, executou });
-  const ph = (q: string) => `https://images.unsplash.com/${q}?w=1000&q=70&auto=format&fit=crop`;
-  return {
-    membros: [
-      { id: CURRENT_USER_ID, nome: "Você", sequenciaBase: 0 },
-      { id: "u-marcos", nome: "Marcos Tavares", sequenciaBase: 12 },
-      { id: "u-juliana", nome: "Juliana Prado", sequenciaBase: 9 },
-      { id: "u-rafael", nome: "Rafael Lima", sequenciaBase: 7 },
-      { id: "u-camila", nome: "Camila Nunes", sequenciaBase: 6 },
-      { id: "u-diego", nome: "Diego Ferreira", sequenciaBase: 4 },
-      { id: "u-patricia", nome: "Patrícia Melo", sequenciaBase: 3 },
-      { id: "u-bruno", nome: "Bruno Costa", sequenciaBase: 1 },
-    ],
-    negocios: [
-      { membroId: CURRENT_USER_ID, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: META_PADRAO },
-      { membroId: "u-marcos", nome: "Reformas Tavares", descricao: "Pequenas reformas residenciais no bairro.", nicho: "Pequenas reformas", meta: 1000 },
-      { membroId: "u-juliana", nome: "Doce Prado", descricao: "Brigadeiros e doces sob encomenda.", nicho: "Doces artesanais", meta: 1000 },
-      { membroId: "u-rafael", nome: "RL Imports", descricao: "Acessórios de celular pela internet.", nicho: "Revenda online", meta: 1000 },
-      { membroId: "u-camila", nome: "CN Social Media", descricao: "Instagram de pequenos comércios locais.", nicho: "Gestão de redes", meta: 1000 },
-      { membroId: "u-diego", nome: "DF Marmitas", descricao: "Marmitas fitness congeladas.", nicho: "Marmitas fitness", meta: 1000 },
-      { membroId: "u-patricia", nome: "Ateliê PM", descricao: "Ajustes e consertos de roupa.", nicho: "Costura", meta: 1000 },
-      { membroId: "u-bruno", nome: "BC Fretes", descricao: "Pequenos fretes e mudanças.", nicho: "Fretes", meta: 1000 },
-    ],
-    checkins: [
-      { id: "c1", membroId: "u-juliana", data: d(0, 1), texto: "Produção de 9 caixas de brigadeiro para encomendas do fim de semana. Vendi tudo pelo WhatsApp antes de terminar.", deuCerto: "Foto boa no status vende mais que qualquer texto.", valor: 186, horas: 5, foto: ph("photo-1606313564200-e75d5e30476c"), reacoes: r(21, 7, 11), minhas: [] },
-      { id: "c2", membroId: "u-marcos", data: d(0, 3), texto: "Fechei o piso do quarto da dona Célia e já emendei o orçamento do banheiro. Dia puxado, mas o dinheiro entrou na conta.", deuCerto: "Cobrar 50% de entrada antes de começar mudou meu caixa.", deuErrado: "Subestimei o material de novo. Comprei argamassa a mais do bolso.", valor: 350, horas: 9, foto: ph("photo-1581858726788-75bc0f6a952d"), reacoes: r(34, 12, 18), minhas: [] },
-      { id: "c3", membroId: "u-rafael", data: d(1, 2), texto: "Primeiro lote de capinhas esgotou. Postei no grupo do condomínio e no Marketplace.", deuErrado: "Esqueci de calcular o frete na margem.", valor: 240, horas: 4, reacoes: r(15, 6, 9), minhas: [] },
-      { id: "c4", membroId: "u-camila", data: d(1, 5), texto: "Fechei a padaria da esquina: 12 posts por mês. Mandei proposta simples em PDF.", deuCerto: "Mostrar o antes e depois do perfil de outro cliente.", valor: 150, horas: 3, reacoes: r(12, 4, 7), minhas: [] },
-      { id: "c5", membroId: "u-diego", data: d(2, 1), texto: "30 marmitas entregues na academia do bairro. O dono deixou eu colocar um cartaz.", valor: 210, horas: 6, foto: ph("photo-1547592180-85f173990554"), reacoes: r(19, 8, 10), minhas: [] },
-      { id: "c6", membroId: "u-juliana", data: d(3), texto: "Teste de sabores novos com vizinhos. Dois pediram para o aniversário.", valor: 92, horas: 3, reacoes: r(8, 3, 4), minhas: [] },
-      { id: "c7", membroId: "u-patricia", data: d(3, 4), texto: "Ajustei 4 calças e uma barra de vestido. Divulguei no grupo da igreja.", deuErrado: "Cobrei barato demais pela barra.", valor: 65, horas: 4, reacoes: r(9, 2, 5), minhas: [] },
-      { id: "c8", membroId: "u-camila", data: d(4), texto: "Reunião com a loja de roupas. Ainda não fechou, mas pediram proposta.", valor: 0, horas: 2, reacoes: r(5, 6, 3), minhas: [] },
-      { id: "c9", membroId: "u-marcos", data: d(5), texto: "Troquei a resistência do chuveiro e instalei duas tomadas.", valor: 0, horas: 3, reacoes: r(6, 2, 4), minhas: [] },
-      { id: "c10", membroId: "u-bruno", data: d(5, 2), texto: "Primeiro frete feito: mudança de um quarto para o bairro vizinho.", deuCerto: "Pedir indicação logo depois de terminar.", valor: 120, horas: 5, reacoes: r(11, 5, 6), minhas: [] },
-    ],
-    favoritos: [],
-    live: { titulo: "Precificação sem medo: como cobrar sem pedir desconto", quando: "Sexta-feira, 9 de outubro · 19h30 (horário de Brasília)", link: "#" },
-  };
-}
+const VAZIO: DB = { membros: [], negocios: [], checkins: [], favoritos: [], live: LIVE };
 
 type NovoCheckIn = { texto: string; valor: number; horas?: number; deuCerto?: string; deuErrado?: string; foto?: string };
 
 type Store = DB & {
   ready: boolean;
+  meId: string;
   addCheckIn: (c: NovoCheckIn) => void;
   toggleReacao: (id: string, r: Reacao) => void;
   toggleFavorito: (id: string) => void;
   updateNegocio: (n: Partial<Negocio>) => void;
-  resetDados: () => void;
+  recarregar: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [db, setDb] = useState<DB>(() => seed());
+  const [db, setDb] = useState<DB>(VAZIO);
+  const [meId, setMeId] = useState("");
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setDb({ ...seed(), ...JSON.parse(raw) });
-    } catch {}
+  const carregar = useCallback(async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) { setDb(VAZIO); setMeId(""); setReady(true); return; }
+    setMeId(uid);
+
+    const [perfis, negocios, checkins, reacoes, favoritos] = await Promise.all([
+      sb.from("profiles").select("id, nome"),
+      sb.from("businesses").select("user_id, nome, descricao, nicho, meta"),
+      sb.from("checkins").select("*").order("created_at", { ascending: false }),
+      sb.from("reactions").select("checkin_id, user_id, tipo"),
+      sb.from("favorites").select("checkin_id").eq("user_id", uid),
+    ]);
+
+    const reacoesPorCheckin = new Map<string, { cont: Record<Reacao, number>; minhas: Reacao[] }>();
+    for (const r of reacoes.data ?? []) {
+      const tipo = r.tipo as Reacao;
+      if (tipo !== "palmas" && tipo !== "bora" && tipo !== "executou") continue;
+      const entry = reacoesPorCheckin.get(r.checkin_id) ?? { cont: { palmas: 0, bora: 0, executou: 0 }, minhas: [] };
+      entry.cont[tipo]++;
+      if (r.user_id === uid) entry.minhas.push(tipo);
+      reacoesPorCheckin.set(r.checkin_id, entry);
+    }
+
+    setDb({
+      membros: (perfis.data ?? []).map((p) => ({ id: p.id, nome: p.nome })),
+      negocios: (negocios.data ?? []).map((n) => ({
+        membroId: n.user_id, nome: n.nome, descricao: n.descricao, nicho: n.nicho, meta: Number(n.meta) || META_PADRAO,
+      })),
+      checkins: (checkins.data ?? []).map((c) => {
+        const r = reacoesPorCheckin.get(c.id);
+        return {
+          id: c.id, membroId: c.user_id, data: c.created_at, texto: c.texto,
+          deuCerto: c.deu_certo ?? undefined, deuErrado: c.deu_errado ?? undefined,
+          valor: Number(c.valor) || 0, horas: c.horas != null ? Number(c.horas) : undefined, foto: c.foto ?? undefined,
+          reacoes: r?.cont ?? { palmas: 0, bora: 0, executou: 0 }, minhas: r?.minhas ?? [],
+        };
+      }),
+      favoritos: (favoritos.data ?? []).map((f) => f.checkin_id),
+      live: LIVE,
+    });
     setReady(true);
   }, []);
 
-  useEffect(() => {
-    if (!ready) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); } catch {}
-  }, [db, ready]);
+  useEffect(() => { carregar(); }, [carregar]);
 
   const addCheckIn = useCallback((c: NovoCheckIn) => {
-    setDb((d) => ({
-      ...d,
-      checkins: [{ id: `c-${Date.now()}`, membroId: CURRENT_USER_ID, data: new Date().toISOString(), reacoes: { palmas: 0, bora: 0, executou: 0 }, minhas: [], ...c }, ...d.checkins],
-    }));
-  }, []);
+    if (!meId) return;
+    const tempId = `tmp-${Date.now()}`;
+    const novo: CheckIn = {
+      id: tempId, membroId: meId, data: new Date().toISOString(),
+      reacoes: { palmas: 0, bora: 0, executou: 0 }, minhas: [], ...c,
+    };
+    setDb((d) => ({ ...d, checkins: [novo, ...d.checkins] }));
+    sb.from("checkins").insert({
+      user_id: meId, texto: c.texto, valor: c.valor,
+      horas: c.horas ?? null, deu_certo: c.deuCerto || null, deu_errado: c.deuErrado || null, foto: c.foto || null,
+    }).then(({ error }) => { if (error) console.error(error); carregar(); });
+  }, [meId, carregar]);
+
   const toggleReacao = useCallback((id: string, r: Reacao) => {
+    if (!meId || id.startsWith("tmp-")) return;
     setDb((d) => ({
       ...d,
       checkins: d.checkins.map((c) => {
@@ -113,16 +126,39 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return { ...c, minhas: tem ? c.minhas.filter((x) => x !== r) : [...c.minhas, r], reacoes: { ...c.reacoes, [r]: c.reacoes[r] + (tem ? -1 : 1) } };
       }),
     }));
-  }, []);
-  const toggleFavorito = useCallback((id: string) => {
-    setDb((d) => ({ ...d, favoritos: d.favoritos.includes(id) ? d.favoritos.filter((x) => x !== id) : [...d.favoritos, id] }));
-  }, []);
-  const updateNegocio = useCallback((n: Partial<Negocio>) => {
-    setDb((d) => ({ ...d, negocios: d.negocios.map((x) => x.membroId === CURRENT_USER_ID ? { ...x, ...n } : x) }));
-  }, []);
-  const resetDados = useCallback(() => setDb(seed()), []);
+    const tinha = db.checkins.find((c) => c.id === id)?.minhas.includes(r);
+    const q = tinha
+      ? sb.from("reactions").delete().eq("checkin_id", id).eq("user_id", meId).eq("tipo", r)
+      : sb.from("reactions").insert({ checkin_id: id, user_id: meId, tipo: r });
+    q.then(({ error }) => { if (error) { console.error(error); carregar(); } });
+  }, [meId, db.checkins, carregar]);
 
-  const value = useMemo(() => ({ ...db, ready, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, resetDados }), [db, ready, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, resetDados]);
+  const toggleFavorito = useCallback((id: string) => {
+    if (!meId || id.startsWith("tmp-")) return;
+    const tinha = db.favoritos.includes(id);
+    setDb((d) => ({ ...d, favoritos: tinha ? d.favoritos.filter((x) => x !== id) : [...d.favoritos, id] }));
+    const q = tinha
+      ? sb.from("favorites").delete().eq("checkin_id", id).eq("user_id", meId)
+      : sb.from("favorites").insert({ checkin_id: id, user_id: meId });
+    q.then(({ error }) => { if (error) { console.error(error); carregar(); } });
+  }, [meId, db.favoritos, carregar]);
+
+  const updateNegocio = useCallback((n: Partial<Negocio>) => {
+    if (!meId) return;
+    setDb((d) => ({ ...d, negocios: d.negocios.map((x) => x.membroId === meId ? { ...x, ...n } : x) }));
+    sb.from("businesses").upsert({
+      user_id: meId,
+      ...(n.nome !== undefined && { nome: n.nome }),
+      ...(n.descricao !== undefined && { descricao: n.descricao }),
+      ...(n.nicho !== undefined && { nicho: n.nicho }),
+      ...(n.meta !== undefined && { meta: n.meta }),
+    }).then(({ error }) => { if (error) { console.error(error); carregar(); } });
+  }, [meId, carregar]);
+
+  const value = useMemo(
+    () => ({ ...db, ready, meId, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, recarregar: carregar }),
+    [db, ready, meId, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, carregar],
+  );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
@@ -153,15 +189,14 @@ export type Linha = { membro: Membro; negocio: Negocio; total: number; relatos: 
 export function useParticipantes(): Linha[] {
   const { membros, negocios, checkins } = useStore();
   return useMemo(() => membros.map((m) => {
-    const negocio = negocios.find((n) => n.membroId === m.id)!;
+    const negocio = negocios.find((n) => n.membroId === m.id) ?? { membroId: m.id, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: META_PADRAO };
     const meus = checkins.filter((c) => c.membroId === m.id);
     const total = meus.reduce((a, c) => a + c.valor, 0);
-    const seqCalc = sequenciaAtual(meus);
     return {
       membro: m, negocio, total, relatos: meus.length,
       diasAtivos: new Set(meus.map((c) => dia(c.data))).size,
-      sequencia: Math.max(m.sequenciaBase, seqCalc),
-      pct: Math.min(100, (total / (negocio?.meta || META_PADRAO)) * 100),
+      sequencia: sequenciaAtual(meus),
+      pct: Math.min(100, (total / (negocio.meta || META_PADRAO)) * 100),
     };
   }), [membros, negocios, checkins]);
 }

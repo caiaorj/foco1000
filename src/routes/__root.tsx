@@ -12,9 +12,10 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { StoreProvider, useStore, totalDe, CURRENT_USER_ID } from "../lib/store";
+import { StoreProvider, useStore, totalDe } from "../lib/store";
 import { CheckInModal } from "../components/app/CheckInModal";
-import { Plus } from "lucide-react";
+import { Plus, LogOut } from "lucide-react";
+import { supabase } from "../integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -122,10 +123,16 @@ const nav = [
 ] as const;
 
 function Header() {
-  const { checkins, negocios } = useStore();
+  const { checkins, negocios, meId } = useStore();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const meta = negocios.find((n) => n.membroId === CURRENT_USER_ID)?.meta ?? 1000;
-  const total = totalDe(checkins, CURRENT_USER_ID);
+  const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;
+  const total = totalDe(checkins, meId);
+
+  async function sair() {
+    await supabase.auth.signOut();
+    router.navigate({ to: "/auth", replace: true });
+  }
   const fmt = (v: number) => "R$ " + v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
   return (
     <header className="border-b border-border bg-background">
@@ -141,6 +148,9 @@ function Header() {
           </div>
           <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-primary-foreground hover:opacity-90">
             <Plus className="h-4 w-4" /> Novo check-in
+          </button>
+          <button onClick={sair} aria-label="Sair" title="Sair" className="p-2 text-muted-foreground hover:text-foreground">
+            <LogOut className="h-4 w-4" />
           </button>
         </div>
         <nav className="-mx-1 mt-3 flex gap-1 overflow-x-auto pb-3">
@@ -160,13 +170,29 @@ function Header() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, queryClient]);
+  const ehAuth = router.state.location.pathname === "/auth";
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        <Header />
-        <main className="mx-auto max-w-3xl px-4 py-6">
+        {ehAuth ? (
           <Outlet />
-        </main>
+        ) : (
+          <>
+            <Header />
+            <main className="mx-auto max-w-3xl px-4 py-6">
+              <Outlet />
+            </main>
+          </>
+        )}
       </StoreProvider>
     </QueryClientProvider>
   );

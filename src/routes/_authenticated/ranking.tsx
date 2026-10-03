@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { brl, CURRENT_USER_ID, useRanking } from "@/lib/store";
+import { brl, useRanking, useStore } from "@/lib/store";
 import { AnnouncementBanner, Avatar, Card, Progress } from "@/components/app/ui-bits";
 
-export const Route = createFileRoute("/ranking")({
+export const Route = createFileRoute("/_authenticated/ranking")({
   head: () => ({
     meta: [
       { title: "Ranking — Foco Mil Reais" },
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/ranking")({
 
 function Ranking() {
   const ranking = useRanking();
+  const { meId } = useStore();
   return (
     <div className="space-y-6">
       <AnnouncementBanner />
@@ -27,7 +28,7 @@ function Ranking() {
         <ol>
           {ranking.map((r, i) => (
             <li key={r.membro.id} className="border-b border-border last:border-0">
-              <Link to="/perfil/$id" params={{ id: r.membro.id }} className={`flex items-center gap-4 px-5 py-3 hover:bg-muted/60 ${r.membro.id === CURRENT_USER_ID ? "bg-muted/50" : ""}`}>
+              <Link to="/perfil/$id" params={{ id: r.membro.id }} className={`flex items-center gap-4 px-5 py-3 hover:bg-muted/60 ${r.membro.id === meId ? "bg-muted/50" : ""}`}>
                 <span className="num w-6 text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
                 <Avatar nome={r.membro.nome} tone="light" size="sm" />
                 <div className="min-w-0 flex-1">

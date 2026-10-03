@@ -3,7 +3,7 @@ import { Bookmark } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { AnnouncementBanner, CheckInPost, EmptyState, SectionTitle } from "@/components/app/ui-bits";
 
-export const Route = createFileRoute("/favoritos")({
+export const Route = createFileRoute("/_authenticated/favoritos")({
   head: () => ({
     meta: [
       { title: "Favoritos — Foco Mil Reais" },
