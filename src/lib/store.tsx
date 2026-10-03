@@ -209,7 +209,7 @@ export type Linha = { membro: Membro; negocio: Negocio; total: number; relatos: 
 export function useParticipantes(): Linha[] {
   const { membros, negocios, checkins } = useStore();
   return useMemo(() => membros.map((m) => {
-    const negocio = negocios.find((n) => n.membroId === m.id) ?? { membroId: m.id, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: META_PADRAO };
+    const negocio = negocios.find((n) => n.membroId === m.id) ?? { membroId: m.id, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: Number(live.meta) || META_PADRAO };
     const meus = checkins.filter((c) => c.membroId === m.id);
     const total = meus.reduce((a, c) => a + c.valor, 0);
     return {

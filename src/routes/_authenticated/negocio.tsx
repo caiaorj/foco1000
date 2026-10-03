@@ -20,8 +20,9 @@ export const Route = createFileRoute("/_authenticated/negocio")({
 const inp = "mt-1.5 w-full border border-input bg-muted/60 p-2.5 text-sm outline-none focus:border-foreground";
 
 function MeuNegocio() {
-  const { negocios, checkins, updateNegocio, meId } = useStore();
-  const neg = negocios.find((n) => n.membroId === meId) ?? { membroId: meId, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: 1000 };
+  const { negocios, checkins, updateNegocio, meId, live } = useStore();
+  let neg = negocios.find((n) => n.membroId === meId) ?? { membroId: meId, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: 1000 };
+  neg = { ...neg, meta: Number(live.meta) || 1000 };
   const total = totalDe(checkins, meId);
   const pct = Math.min(100, (total / neg.meta) * 100);
   const meus = checkins.filter((c) => c.membroId === meId);
@@ -32,7 +33,7 @@ function MeuNegocio() {
   const abrir = () => { setForm(neg); setEdit(true); };
   const salvar = (e: React.FormEvent) => {
     e.preventDefault();
-    updateNegocio({ nome: form.nome.trim().slice(0, 80) || "Meu projeto", nicho: form.nicho.trim().slice(0, 40) || "A definir", descricao: form.descricao.trim().slice(0, 300), meta: Math.max(1, Number(form.meta) || 1000) });
+    updateNegocio({ nome: form.nome.trim().slice(0, 80) || "Meu projeto", nicho: form.nicho.trim().slice(0, 40) || "A definir", descricao: form.descricao.trim().slice(0, 300) });
     setEdit(false);
   };
 
@@ -47,7 +48,7 @@ function MeuNegocio() {
               <label className="block"><span className="label-mono">Nome</span><input className={inp} value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></label>
               <label className="block"><span className="label-mono">Nicho</span><input className={inp} value={form.nicho} onChange={(e) => setForm({ ...form, nicho: e.target.value })} /></label>
               <label className="block"><span className="label-mono">Breve descrição</span><textarea className={inp} rows={2} value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></label>
-              <label className="block"><span className="label-mono">Meta (R$)</span><input type="number" min={1} className={`${inp} num`} value={form.meta} onChange={(e) => setForm({ ...form, meta: Number(e.target.value) })} /></label>
+              <p className="text-xs text-muted-foreground">Meta do desafio: <b className="num">{brl(neg.meta)}</b> — definida pela organização, igual para todos.</p>
               <div className="flex gap-2">
                 <button className="bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground">Salvar</button>
                 <button type="button" onClick={() => setEdit(false)} className="border border-border px-4 py-2 text-xs font-bold uppercase tracking-wider">Cancelar</button>

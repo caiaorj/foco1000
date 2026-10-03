@@ -129,7 +129,7 @@ function Header() {
   const { checkins, negocios, meId, isAdmin } = useStore();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;
+  const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000; // meta global (admin)
   const total = totalDe(checkins, meId);
 
   async function sair() {
