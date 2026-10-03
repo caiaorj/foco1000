@@ -126,7 +126,7 @@ const nav = [
 ] as const;
 
 function Header() {
-  const { checkins, negocios, membros, meId, isAdmin } = useStore();
+  const { checkins, negocios, meId, isAdmin } = useStore();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;

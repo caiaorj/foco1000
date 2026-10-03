@@ -15,9 +15,15 @@ export const Route = createFileRoute("/_authenticated/")({
 });
 
 function Feed() {
-  const { checkins } = useStore();
+  const { checkins, membros, meId } = useStore();
+  const nomeCompleto = membros.find((m) => m.id === meId)?.nome ?? "";
+  const primeiroNome = nomeCompleto.split(" ").filter(Boolean)[0] ?? "";
   return (
     <div className="space-y-6">
+      <div>
+        <span className="label-mono block">OLÁ{primeiroNome ? "," : ""}</span>
+        <span className="font-display text-2xl font-semibold leading-tight">{primeiroNome || "bem-vindo(a)"}</span>
+      </div>
       <AnnouncementBanner />
       <SectionTitle title="Feed da comunidade" meta={`${checkins.length} check-ins`} />
       <div className="space-y-5">
