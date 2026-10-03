@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { brl, useRanking, useStore } from "@/lib/store";
-import { Card, CheckInPost, Progress } from "@/components/app/ui-bits";
+import { Avatar, Card, CheckInPost, Progress, SectionTitle } from "@/components/app/ui-bits";
 import { ShareCard } from "@/components/app/ShareCard";
 
 export const Route = createFileRoute("/perfil/$id")({
   head: () => ({
     meta: [
-      { title: "Perfil do participante — Foco Mil Reais" },
+      { title: "Diário de bordo — Foco Mil Reais" },
       { name: "description", content: "Histórico de check-ins e progresso do participante rumo aos R$ 1.000." },
-      { property: "og:title", content: "Perfil do participante — Foco Mil Reais" },
+      { property: "og:title", content: "Diário de bordo — Foco Mil Reais" },
       { property: "og:description", content: "Histórico de check-ins e progresso do participante rumo aos R$ 1.000." },
     ],
   }),
@@ -21,31 +21,39 @@ function Perfil() {
   const ranking = useRanking();
   const pos = ranking.findIndex((r) => r.membro.id === id);
   const r = ranking[pos];
-  if (!r) return <div className="py-20 text-center"><p>Participante não encontrado.</p><Link to="/ranking" className="text-accent underline">Ver ranking</Link></div>;
+  if (!r) return <div className="py-20 text-center"><p>Participante não encontrado.</p><Link to="/participantes" className="text-accent underline">Ver participantes</Link></div>;
   const hist = checkins.filter((c) => c.membroId === id).sort((a, b) => b.data.localeCompare(a.data));
+  const stats = [["Posição", `#${pos + 1}`], ["Sequência", `${r.sequencia}d`], ["Dias ativos", r.diasAtivos], ["Relatos", r.relatos]] as const;
 
   return (
     <div className="space-y-6">
-      <Card className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <img src={r.membro.avatar} alt="" className="h-20 w-20  bg-muted" />
-        <div className="flex-1">
-          <h1 className="font-display text-3xl font-semibold ">{r.membro.nome}</h1>
-          <p className="text-sm text-muted-foreground">{r.membro.bio}</p>
-          <p className="mt-1 text-sm"><b>{r.negocio.nome}</b> · {r.negocio.nicho}</p>
+      <Card>
+        <div className="flex items-center gap-4 border-b border-border p-5">
+          <Avatar nome={r.membro.nome} />
+          <div>
+            <p className="label-mono">Diário de bordo</p>
+            <h1 className="font-display text-2xl font-semibold">{r.negocio.nome}</h1>
+            <p className="text-sm text-muted-foreground">{r.membro.nome} · {r.negocio.nicho}</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-muted-foreground">Posição</p>
-          <p className="num text-3xl font-semibold  text-accent">#{pos + 1}</p>
+        {r.negocio.descricao && <p className="border-b border-border p-5 text-sm">{r.negocio.descricao}</p>}
+        <div className="grid grid-cols-4 border-b border-border">
+          {stats.map(([k, v]) => (
+            <div key={k} className="border-r border-border p-4 last:border-0">
+              <p className="label-mono !text-[10px]">{k}</p>
+              <p className="num mt-1 text-lg font-semibold">{v}</p>
+            </div>
+          ))}
+        </div>
+        <div className="p-5">
+          <div className="flex justify-between font-mono text-xs"><span className="text-accent">{brl(r.total)}</span><span className="text-muted-foreground">meta {brl(r.negocio.meta)}</span></div>
+          <Progress pct={r.pct} className="mt-2 !h-1.5" />
         </div>
       </Card>
-      <div className="grid gap-6 md:grid-cols-[1fr_320px]">
-        <div className="space-y-4">
-          <Card>
-            <div className="flex justify-between text-sm"><span>{brl(r.total)}</span><span className="text-muted-foreground">meta {brl(r.negocio.meta)}</span></div>
-            <Progress pct={r.pct} className="mt-2" />
-          </Card>
-          <h2 className="font-display text-xl font-bold">Histórico ({hist.length})</h2>
-          {hist.length ? hist.map((c) => <CheckInPost key={c.id} c={c} />) : <p className="text-sm text-muted-foreground">Nenhum check-in ainda.</p>}
+      <div className="grid gap-6 md:grid-cols-[1fr_260px]">
+        <div className="space-y-5">
+          <SectionTitle title="Relatos" meta={`${hist.length} check-ins`} />
+          {hist.length ? hist.map((c) => <CheckInPost key={c.id} c={c} />) : <p className="text-sm text-muted-foreground">Nenhum relato ainda.</p>}
         </div>
         <div><ShareCard nome={r.membro.nome} negocio={r.negocio.nome} total={r.total} meta={r.negocio.meta} /></div>
       </div>
