@@ -26,8 +26,9 @@ export type CheckIn = {
   minhas: Reacao[];
 };
 export type Live = { titulo: string; quando: string; link: string };
+export type Material = { id: string; titulo: string; tipo: string; descricao: string; link: string; capa: string; publicado: boolean; data: string };
 
-type DB = { membros: Membro[]; negocios: Negocio[]; checkins: CheckIn[]; favoritos: string[]; live: Live };
+type DB = { membros: Membro[]; negocios: Negocio[]; checkins: CheckIn[]; favoritos: string[]; live: Live; materiais: Material[]; isAdmin: boolean };
 
 const LIVE: Live = {
   titulo: "Precificação sem medo: como cobrar sem pedir desconto",
@@ -35,7 +36,7 @@ const LIVE: Live = {
   link: "#",
 };
 
-const VAZIO: DB = { membros: [], negocios: [], checkins: [], favoritos: [], live: LIVE };
+const VAZIO: DB = { membros: [], negocios: [], checkins: [], favoritos: [], live: LIVE, materiais: [], isAdmin: false };
 
 type NovoCheckIn = { texto: string; valor: number; horas?: number; deuCerto?: string; deuErrado?: string; foto?: string };
 
@@ -62,12 +63,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!uid) { setDb(VAZIO); setMeId(""); setReady(true); return; }
     setMeId(uid);
 
-    const [perfis, negocios, checkins, reacoes, favoritos] = await Promise.all([
+    const [perfis, negocios, checkins, reacoes, favoritos, live, materiais, papel] = await Promise.all([
       sb.from("profiles").select("id, nome"),
       sb.from("businesses").select("user_id, nome, descricao, nicho, meta"),
       sb.from("checkins").select("*").order("created_at", { ascending: false }),
       sb.from("reactions").select("checkin_id, user_id, tipo"),
       sb.from("favorites").select("checkin_id").eq("user_id", uid),
+      sb.from("live_settings").select("titulo, quando, link").eq("id", 1).maybeSingle(),
+      sb.from("materials").select("*").order("created_at", { ascending: false }),
+      sb.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
     ]);
 
     const reacoesPorCheckin = new Map<string, { cont: Record<Reacao, number>; minhas: Reacao[] }>();
@@ -95,7 +99,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         };
       }),
       favoritos: (favoritos.data ?? []).map((f) => f.checkin_id),
-      live: LIVE,
+      live: live.data ?? LIVE,
+      materiais: (materiais.data ?? []).map((m) => ({
+        id: m.id, titulo: m.titulo, tipo: m.tipo, descricao: m.descricao, link: m.link, capa: m.capa, publicado: m.publicado, data: m.created_at,
+      })),
+      isAdmin: !!papel.data,
     });
     setReady(true);
   }, []);
@@ -169,6 +177,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
+
+export { sb };
 
 export function useStore() {
   const s = useContext(Ctx);

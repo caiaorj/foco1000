@@ -120,10 +120,11 @@ const nav = [
   { to: "/negocio", label: "Meu Negócio" },
   { to: "/ranking", label: "Ranking" },
   { to: "/participantes", label: "Participantes" },
+  { to: "/materias", label: "Matérias" },
 ] as const;
 
 function Header() {
-  const { checkins, negocios, membros, meId } = useStore();
+  const { checkins, negocios, membros, meId, isAdmin } = useStore();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;
@@ -167,6 +168,13 @@ function Header() {
               {n.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link to="/admin"
+              className="whitespace-nowrap border border-accent px-3 py-2 font-mono text-xs uppercase tracking-wider text-accent hover:bg-accent hover:text-accent-foreground"
+              activeProps={{ className: "bg-accent !text-accent-foreground font-semibold" }}>
+              Admin
+            </Link>
+          )}
         </nav>
       </div>
       <CheckInModal open={open} onClose={() => setOpen(false)} />
