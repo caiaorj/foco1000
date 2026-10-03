@@ -82,6 +82,7 @@ function AuthPage() {
         <span className="label-mono block">Desafio em execução</span>
         <h1 className="font-display mt-1 text-3xl font-semibold">
           Foco <span className="text-accent">Mil Reais</span>
+          <span className="sr-only"> — Desafio dos primeiros R$ 1.000 faturados</span>
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Mostre todo dia o que você fez até faturar seus primeiros R$ 1.000.
