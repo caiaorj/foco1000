@@ -39,14 +39,14 @@ export function CheckInModal({ open, onClose }: { open: boolean; onClose: () => 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/45 p-4" onClick={onClose}>
-      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="max-h-[92vh] w-full max-w-md overflow-y-auto bg-card p-5 text-foreground">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/45 sm:items-center sm:p-4" onClick={onClose}>
+      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="max-h-[92dvh] w-full max-w-md overflow-y-auto bg-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-foreground">
         <div className="mb-5 flex items-start justify-between">
           <div>
             <p className="label-mono">Check-in de execução</p>
             <h2 className="font-display text-2xl font-semibold">O que você fez hoje?</h2>
           </div>
-          <button type="button" onClick={onClose} aria-label="Fechar"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={onClose} aria-label="Fechar" className="-m-2 p-2"><X className="h-4 w-4" /></button>
         </div>
         <div className="grid grid-cols-2 gap-2.5">
           <label><span className="label-mono">Vendido hoje (R$)</span><input className={`${inp} mt-1.5 num`} inputMode="decimal" placeholder="0" value={f.valor} onChange={set("valor")} /></label>
@@ -54,7 +54,7 @@ export function CheckInModal({ open, onClose }: { open: boolean; onClose: () => 
         </div>
         <label className="mt-5 block"><span className="label-mono">Relato do dia *</span>
           <textarea className={`${inp} mt-1.5`} rows={3} maxLength={1000} placeholder="O que você executou, vendeu, entregou..." value={f.texto} onChange={set("texto")} /></label>
-        <div className="mt-5 grid grid-cols-2 gap-2.5">
+        <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
           <label><span className="label-mono">O que deu certo</span><textarea className={`${inp} mt-1.5`} rows={2} maxLength={300} value={f.deuCerto} onChange={set("deuCerto")} /></label>
           <label><span className="label-mono">O que deu errado</span><textarea className={`${inp} mt-1.5`} rows={2} maxLength={300} value={f.deuErrado} onChange={set("deuErrado")} /></label>
         </div>

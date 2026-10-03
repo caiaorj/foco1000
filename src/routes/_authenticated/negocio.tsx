@@ -55,7 +55,7 @@ function MeuNegocio() {
             </form>
           ) : (
             <div className="flex items-start justify-between gap-4">
-              <div>
+              <div className="min-w-0">
                 <p className="label-mono">Meu negócio</p>
                 <h1 className="mt-1 font-display text-2xl font-semibold">{neg.nome}</h1>
                 <p className="text-sm text-muted-foreground">{neg.nicho}</p>
