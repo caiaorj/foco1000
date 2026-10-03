@@ -26,7 +26,7 @@ export type CheckIn = {
   reacoes: Record<Reacao, number>;
   minhas: Reacao[];
 };
-export type Live = { titulo: string; quando: string; link: string };
+export type Live = { titulo: string; quando: string; link: string; meta?: number };
 export type Material = { id: string; titulo: string; tipo: string; descricao: string; link: string; capa: string; publicado: boolean; data: string };
 
 type DB = { membros: Membro[]; negocios: Negocio[]; checkins: CheckIn[]; favoritos: string[]; live: Live; materiais: Material[]; isAdmin: boolean };
@@ -70,7 +70,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sb.from("checkins").select("*").order("created_at", { ascending: false }),
       sb.from("reactions").select("checkin_id, user_id, tipo"),
       sb.from("favorites").select("checkin_id").eq("user_id", uid),
-      sb.from("live_settings").select("titulo, quando, link").eq("id", 1).maybeSingle(),
+      sb.from("live_settings").select("titulo, quando, link, meta").eq("id", 1).maybeSingle(),
       sb.from("materials").select("*").order("created_at", { ascending: false }),
       sb.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
     ]);
@@ -88,7 +88,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setDb({
       membros: (perfis.data ?? []).map((p) => ({ id: p.id, nome: p.nome })),
       negocios: (negocios.data ?? []).map((n) => ({
-        membroId: n.user_id, nome: n.nome, descricao: n.descricao, nicho: n.nicho, meta: Number(n.meta) || META_PADRAO,
+        membroId: n.user_id, nome: n.nome, descricao: n.descricao, nicho: n.nicho, meta: Number(live.data?.meta) || META_PADRAO,
       })),
       checkins: (checkins.data ?? []).map((c) => {
         const r = reacoesPorCheckin.get(c.id);
@@ -170,8 +170,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ...(n.nome !== undefined && { nome: n.nome }),
       ...(n.descricao !== undefined && { descricao: n.descricao }),
       ...(n.nicho !== undefined && { nicho: n.nicho }),
-      ...(n.meta !== undefined && { meta: n.meta }),
-    }).then(({ error }) => { if (error) { console.error(error); carregar(); } });
+    }, { onConflict: "user_id" }).then(({ error }) => { if (error) { console.error(error); toast.error("Não foi possível salvar: " + error.message); carregar(); } else toast.success("Negócio salvo"); });
   }, [meId, carregar]);
 
   const value = useMemo(
