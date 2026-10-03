@@ -69,7 +69,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     // Garante que o perfil existe (contas antigas podem não ter linha em profiles).
     const { data: meuPerfil } = await sb.from("profiles").select("id").eq("id", uid).maybeSingle();
     if (!meuPerfil) {
-      const nome = (userData.user?.user_metadata?.nome as string | undefined) || userData.user?.email?.split("@")[0] || "Participante";
+      const nome = (userData.user?.user_metadata?.["nome"] as string | undefined) || userData.user?.email?.split("@")[0] || "Participante";
       await sb.from("profiles").upsert({ id: uid, nome }, { onConflict: "id" });
     }
 
