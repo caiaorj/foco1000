@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Architecture
+- All app data lives in `src/lib/store.tsx` (React context + localStorage, seeded mocks); swap its internals for an external Supabase client later without touching screens.
