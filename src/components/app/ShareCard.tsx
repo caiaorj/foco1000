@@ -25,26 +25,26 @@ export function ShareCard({ nome, negocio, total, meta }: Props) {
     x.font = "40px sans-serif"; x.fillText(`de ${brl(meta)} — ${pct.toFixed(0)}% da meta`, 90, 640);
     x.globalAlpha = 0.25; x.fillRect(90, 720, 900, 40); x.globalAlpha = 1;
     x.fillStyle = accent; x.fillRect(90, 720, 900 * pct / 100, 40);
-    x.fillStyle = fg; x.font = "36px sans-serif"; x.fillText("Rumo aos primeiros R$ 1.000 🚀", 90, 950);
+    x.fillStyle = fg; x.font = "36px sans-serif"; x.fillText("Rumo aos primeiros R$ 1.000", 90, 950);
     const a = document.createElement("a");
     a.download = "meu-progresso.png"; a.href = c.toDataURL("image/png"); a.click();
   };
 
   return (
     <div>
-      <div ref={ref} className="aspect-square w-full rounded-3xl bg-foreground p-8 text-background flex flex-col justify-between">
-        <p className="font-display text-sm font-bold tracking-[0.2em]">FOCO MIL REAIS</p>
+      <div ref={ref} className="aspect-square w-full rounded-sm bg-foreground p-8 text-background flex flex-col justify-between">
+        <p className="label-mono !text-background/70">Foco Mil Reais · desafio</p>
         <div>
           <p className="text-sm opacity-80">{nome} · {negocio}</p>
-          <p className="font-display text-5xl font-extrabold">{brl(total)}</p>
+          <p className="num text-4xl font-semibold ">{brl(total)}</p>
           <p className="mt-1 text-sm opacity-80">de {brl(meta)} — {pct.toFixed(0)}% da meta</p>
-          <div className="mt-4 h-3 w-full rounded-full bg-background/25">
-            <div data-accent className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+          <div className="mt-4 h-3 w-full  bg-background/25">
+            <div data-accent className="h-full bg-accent" style={{ width: `${pct}%` }} />
           </div>
         </div>
-        <p className="text-sm opacity-80">Rumo aos primeiros R$ 1.000 🚀</p>
+        <p className="text-sm opacity-80">Rumo aos primeiros R$ 1.000</p>
       </div>
-      <button onClick={baixar} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-semibold hover:bg-muted">
+      <button onClick={baixar} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-sm border-2 border-border py-2.5 text-sm font-semibold hover:bg-muted">
         <Download className="h-4 w-4" /> Baixar imagem para compartilhar
       </button>
     </div>

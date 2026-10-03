@@ -21,21 +21,21 @@ function Perfil() {
   const ranking = useRanking();
   const pos = ranking.findIndex((r) => r.membro.id === id);
   const r = ranking[pos];
-  if (!r) return <div className="py-20 text-center"><p>Participante não encontrado.</p><Link to="/ranking" className="text-primary underline">Ver ranking</Link></div>;
+  if (!r) return <div className="py-20 text-center"><p>Participante não encontrado.</p><Link to="/ranking" className="text-accent underline">Ver ranking</Link></div>;
   const hist = checkins.filter((c) => c.membroId === id).sort((a, b) => b.data.localeCompare(a.data));
 
   return (
     <div className="space-y-6">
       <Card className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <img src={r.membro.avatar} alt="" className="h-20 w-20 rounded-full bg-muted" />
+        <img src={r.membro.avatar} alt="" className="h-20 w-20  bg-muted" />
         <div className="flex-1">
-          <h1 className="font-display text-3xl font-extrabold">{r.membro.nome}</h1>
+          <h1 className="font-display text-3xl font-semibold ">{r.membro.nome}</h1>
           <p className="text-sm text-muted-foreground">{r.membro.bio}</p>
           <p className="mt-1 text-sm"><b>{r.negocio.nome}</b> · {r.negocio.nicho}</p>
         </div>
         <div className="text-right">
           <p className="text-xs text-muted-foreground">Posição</p>
-          <p className="font-display text-4xl font-extrabold text-primary">#{pos + 1}</p>
+          <p className="num text-3xl font-semibold  text-accent">#{pos + 1}</p>
         </div>
       </Card>
       <div className="grid gap-6 md:grid-cols-[1fr_320px]">
