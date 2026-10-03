@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Nova senha — Foco Mil Reais" },
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/reset-password")({
       { property: "og:description", content: "Crie uma nova senha para sua conta do Foco Mil Reais." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: ResetPassword,

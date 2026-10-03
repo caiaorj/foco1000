@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { AnnouncementBanner, CheckInPost, SectionTitle } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/_authenticated/")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Feed — Foco Mil Reais" },

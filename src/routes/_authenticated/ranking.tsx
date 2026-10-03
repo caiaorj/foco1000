@@ -3,6 +3,7 @@ import { brl, useRanking, useStore } from "@/lib/store";
 import { AnnouncementBanner, Avatar, Card, Progress } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/_authenticated/ranking")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Ranking — Foco Mil Reais" },

@@ -4,10 +4,18 @@ import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Entrar — Foco Mil Reais" },
       { name: "description", content: "Entre ou crie sua conta para participar do desafio Foco Mil Reais." },
+      { property: "og:title", content: "Entrar — Foco Mil Reais" },
+      { property: "og:description", content: "Entre ou crie sua conta para participar do desafio Foco Mil Reais." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://foco1000.lovable.app/auth" },
+      { name: "twitter:card", content: "summary" },
+    ],
+    links: [{ rel: "canonical", href: "https://foco1000.lovable.app/auth" }
     ],
   }),
   component: AuthPage,

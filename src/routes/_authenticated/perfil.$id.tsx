@@ -4,6 +4,7 @@ import { Avatar, Card, CheckInPost, Progress, SectionTitle } from "@/components/
 import { ShareCard } from "@/components/app/ShareCard";
 
 export const Route = createFileRoute("/_authenticated/perfil/$id")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Diário de bordo — Foco Mil Reais" },

@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { AnnouncementBanner, CheckInPost, EmptyState, SectionTitle } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/_authenticated/favoritos")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Favoritos — Foco Mil Reais" },

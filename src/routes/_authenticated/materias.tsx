@@ -14,6 +14,7 @@ export const TIPOS = [
 export const tipoLabel = (t: string) => TIPOS.find((x) => x.v === t)?.l ?? t;
 
 export const Route = createFileRoute("/_authenticated/materias")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Matérias — Foco Mil Reais" },
