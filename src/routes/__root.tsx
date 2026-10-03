@@ -13,7 +13,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { StoreProvider, useStore, totalDe } from "../lib/store";
+import { StoreProvider, useStore, totalDe } from "@/lib/store";
 import { CheckInModal } from "../components/app/CheckInModal";
 import { Plus, LogOut } from "lucide-react";
 import { supabase } from "../integrations/supabase/client";
