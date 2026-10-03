@@ -68,13 +68,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!uid) { setDb(VAZIO); setMeId(""); setReady(true); return; }
     setMeId(uid);
 
-    // Garante que o perfil existe (contas antigas podem não ter linha em profiles).
-    const { data: meuPerfil } = await sb.from("profiles").select("id").eq("id", uid).maybeSingle();
-    if (!meuPerfil) {
-      const nome = (userData.user?.user_metadata?.["nome"] as string | undefined) || userData.user?.email?.split("@")[0] || "Participante";
-      await sb.from("profiles").upsert({ id: uid, nome }, { onConflict: "id" });
-    }
-
+    // Tudo em paralelo: uma única ida ao servidor.
     const [perfis, negocios, checkins, reacoes, favoritos, live, materiais, papel] = await Promise.all([
       sb.from("profiles").select("id, nome"),
       sb.from("businesses").select("user_id, nome, descricao, nicho, meta"),
@@ -86,11 +80,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sb.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
     ]);
 
+    // Garante que o perfil existe (contas antigas) — sem bloquear a tela.
+    if (perfis.data && !perfis.data.some((p) => p.id === uid)) {
+      const nome = (userData.user?.user_metadata?.["nome"] as string | undefined) || userData.user?.email?.split("@")[0] || "Participante";
+      perfis.data.push({ id: uid, nome });
+      void sb.from("profiles").upsert({ id: uid, nome }, { onConflict: "id" });
+    }
+
+    // Fotos: assinadas depois que a tela já apareceu.
     const caminhos = (checkins.data ?? []).map((c) => c.foto).filter((f): f is string => !!f && !/^(https?:|data:)/.test(f));
     const urls = new Map<string, string>();
     if (caminhos.length) {
-      const { data: assinadas } = await sb.storage.from("checkins").createSignedUrls(caminhos, 60 * 60 * 24);
-      for (const a of assinadas ?? []) if (a.path && a.signedUrl) urls.set(a.path, a.signedUrl);
+      void sb.storage.from("checkins").createSignedUrls(caminhos, 60 * 60 * 24).then(({ data: assinadas }) => {
+        const mapa = new Map<string, string>();
+        for (const a of assinadas ?? []) if (a.path && a.signedUrl) mapa.set(a.path, a.signedUrl);
+        const porId = new Map((checkins.data ?? []).map((c) => [c.id, c.foto] as const));
+        setDb((d) => ({
+          ...d,
+          checkins: d.checkins.map((c) => {
+            const p = porId.get(c.id);
+            return p && mapa.has(p) ? { ...c, foto: mapa.get(p) } : c;
+          }),
+        }));
+      });
     }
 
     const reacoesPorCheckin = new Map<string, { cont: Record<Reacao, number>; minhas: Reacao[] }>();
