@@ -38,8 +38,8 @@ export function ShareCard({ nome, negocio, total, meta }: Props) {
           <p className="text-sm opacity-80">{nome} · {negocio}</p>
           <p className="num text-4xl font-semibold ">{brl(total)}</p>
           <p className="mt-1 text-sm opacity-80">de {brl(meta)} — {pct.toFixed(0)}% da meta</p>
-          <div className="mt-4 h-3 w-full rounded-full bg-background/25">
-            <div data-accent className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+          <div className="mt-4 h-3 w-full  bg-background/25">
+            <div data-accent className="h-full bg-accent" style={{ width: `${pct}%` }} />
           </div>
         </div>
         <p className="text-sm opacity-80">Rumo aos primeiros R$ 1.000</p>

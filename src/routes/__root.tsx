@@ -8,11 +8,13 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { StoreProvider } from "../lib/store";
+import { StoreProvider, useStore, totalDe, CURRENT_USER_ID } from "../lib/store";
+import { CheckInModal } from "../components/app/CheckInModal";
+import { Plus } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -113,33 +115,56 @@ function RootShell({ children }: { children: ReactNode }) {
 
 const nav = [
   { to: "/", label: "Feed" },
+  { to: "/favoritos", label: "Favoritos" },
   { to: "/negocio", label: "Meu Negócio" },
   { to: "/ranking", label: "Ranking" },
+  { to: "/participantes", label: "Participantes" },
 ] as const;
+
+function Header() {
+  const { checkins, negocios } = useStore();
+  const [open, setOpen] = useState(false);
+  const meta = negocios.find((n) => n.membroId === CURRENT_USER_ID)?.meta ?? 1000;
+  const total = totalDe(checkins, CURRENT_USER_ID);
+  const fmt = (v: number) => "R$ " + v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+  return (
+    <header className="border-b border-border bg-background">
+      <div className="mx-auto max-w-3xl px-4 pt-4">
+        <div className="flex items-center gap-4">
+          <Link to="/" className="leading-tight">
+            <span className="label-mono block">Desafio em execução</span>
+            <span className="font-display text-xl font-semibold">Foco <span className="text-accent">Mil Reais</span></span>
+          </Link>
+          <div className="ml-auto hidden text-right sm:block">
+            <span className="label-mono block">Sua meta</span>
+            <span className="num text-sm"><span className="text-accent">{fmt(total)}</span> / {fmt(meta)}</span>
+          </div>
+          <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-primary-foreground hover:opacity-90">
+            <Plus className="h-4 w-4" /> Novo check-in
+          </button>
+        </div>
+        <nav className="-mx-1 mt-3 flex gap-1 overflow-x-auto pb-3">
+          {nav.map((n) => (
+            <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
+              className="whitespace-nowrap px-3 py-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+              activeProps={{ className: "bg-primary !text-primary-foreground font-semibold" }}>
+              {n.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <CheckInModal open={open} onClose={() => setOpen(false)} />
+    </header>
+  );
+}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        <header className="sticky top-0 z-40 border-b-2 border-border bg-background">
-          <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
-            <Link to="/" className="font-display text-lg font-extrabold">
-              FOCO <span className="bg-accent px-1 text-accent-foreground">R$1.000</span>
-            </Link>
-            <nav className="ml-auto flex gap-1">
-              {nav.map((n) => (
-                <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
-                  className="px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
-                  activeProps={{ className: "bg-foreground text-background" }}>
-                  {n.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </header>
-        <main className="mx-auto max-w-4xl px-4 py-8">
+        <Header />
+        <main className="mx-auto max-w-3xl px-4 py-6">
           <Outlet />
         </main>
       </StoreProvider>

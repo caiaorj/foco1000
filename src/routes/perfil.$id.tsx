@@ -27,9 +27,9 @@ function Perfil() {
   return (
     <div className="space-y-6">
       <Card className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <img src={r.membro.avatar} alt="" className="h-20 w-20 rounded-full bg-muted" />
+        <img src={r.membro.avatar} alt="" className="h-20 w-20  bg-muted" />
         <div className="flex-1">
-          <h1 className="font-display text-3xl ">{r.membro.nome}</h1>
+          <h1 className="font-display text-3xl font-semibold ">{r.membro.nome}</h1>
           <p className="text-sm text-muted-foreground">{r.membro.bio}</p>
           <p className="mt-1 text-sm"><b>{r.negocio.nome}</b> · {r.negocio.nicho}</p>
         </div>

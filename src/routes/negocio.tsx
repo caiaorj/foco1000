@@ -38,13 +38,13 @@ function MeuNegocio() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-3xl ">Meu Negócio</h1>
+      <h1 className="font-display text-3xl font-semibold ">Meu Negócio</h1>
       <Card className="bg-primary text-primary-foreground border-0">
         <p className="text-sm opacity-80">Faturamento acumulado</p>
         <p className="num text-4xl font-semibold ">{brl(total)}</p>
         <p className="mt-1 text-sm opacity-80">Meta: {brl(neg.meta)} · faltam {brl(Math.max(0, neg.meta - total))}</p>
-        <div className="mt-4 h-3 w-full rounded-full bg-primary-foreground/25">
-          <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${pct}%` }} />
+        <div className="mt-4 h-3 w-full  bg-primary-foreground/25">
+          <div className="h-full bg-accent transition-all" style={{ width: `${pct}%` }} />
         </div>
         <button onClick={() => setOpen(true)} className="mt-5 rounded-sm bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground">Registrar check-in</button>
       </Card>
