@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -33,6 +33,10 @@ function AuthPage() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [esqueci, setEsqueci] = useState(false);
+
+  useEffect(() => {
+    void supabase.rpc("registrar_visita");
+  }, []);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();

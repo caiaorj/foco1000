@@ -31,7 +31,13 @@ function Admin() {
   const [editId, setEditId] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const [aviso, setAviso] = useState(live);
+  const [visitas, setVisitas] = useState<number | null>(null);
   useEffect(() => setAviso(live), [live]);
+  useEffect(() => {
+    if (!isAdmin) return;
+    void sb.from("page_visits").select("visitas").eq("id", 1).maybeSingle()
+      .then(({ data }) => setVisitas(data?.visitas ?? 0));
+  }, [isAdmin]);
 
   if (!ready) return <p className="label-mono">Carregando…</p>;
   if (!isAdmin)
@@ -77,6 +83,17 @@ function Admin() {
   return (
     <div className="space-y-8">
       <SectionTitle title="Painel admin" meta={`${membros.length} participantes · ${checkins.length} check-ins · ${materiais.length} matérias`} />
+
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="p-4 text-center">
+          <p className="num text-3xl font-bold">{visitas === null ? "…" : visitas}</p>
+          <p className="label-mono mt-1">Visitas à página</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <p className="num text-3xl font-bold">{membros.length} <span className="text-base text-muted-foreground">/ 30</span></p>
+          <p className="label-mono mt-1">Pessoas cadastradas</p>
+        </Card>
+      </div>
 
       <Card className="p-5">
         <span className="label-mono">{editId ? "Editando matéria" : "Nova matéria"}</span>
