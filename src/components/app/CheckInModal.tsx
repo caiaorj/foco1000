@@ -23,7 +23,7 @@ export function CheckInModal({ open, onClose }: { open: boolean; onClose: () => 
     const v = Number(valor.replace(",", "."));
     if (!texto.trim()) return setErro("Conte o que você fez hoje.");
     if (isNaN(v) || v < 0) return setErro("Informe um valor válido (pode ser 0).");
-    addCheckIn({ texto: texto.trim().slice(0, 1000), valor: Math.round(v * 100) / 100, foto });
+    addCheckIn({ texto: texto.trim().slice(0, 1000), valor: Math.round(v * 100) / 100, ...(foto ? { foto } : {}) });
     setTexto(""); setValor(""); setFoto(undefined); setErro("");
     onClose();
   };
