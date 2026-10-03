@@ -34,16 +34,16 @@ function Ranking() {
                   <p className="truncate text-sm font-semibold">{r.membro.nome}</p>
                   <p className="truncate text-xs text-muted-foreground">{r.negocio.nome}</p>
                 </div>
-                <div className="hidden w-20 text-right sm:block">
-                  <p className="label-mono !text-[10px]">Sequência</p>
+                <div className="hidden w-24 text-right sm:block">
+                  <p className="label-mono !text-[10px] whitespace-nowrap">Sequência</p>
                   <p className="num text-sm font-semibold">{r.sequencia}d</p>
                 </div>
-                <div className="hidden w-20 text-right sm:block">
-                  <p className="label-mono !text-[10px]">Dias ativos</p>
+                <div className="hidden w-24 text-right sm:block">
+                  <p className="label-mono !text-[10px] whitespace-nowrap">Dias ativos</p>
                   <p className="num text-sm">{r.diasAtivos}</p>
                 </div>
                 <div className="w-24 text-right">
-                  <p className="label-mono !text-[10px]">Acumulado</p>
+                  <p className="label-mono !text-[10px] whitespace-nowrap">Acumulado</p>
                   <p className="num text-sm font-semibold text-accent">{brl(r.total)}</p>
                   <Progress pct={r.pct} className="mt-1" />
                 </div>
