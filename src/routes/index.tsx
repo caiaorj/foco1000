@@ -25,10 +25,10 @@ function Feed() {
       <AnnouncementBanner />
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="font-display text-3xl font-extrabold">Feed da comunidade</h1>
+          <h1 className="font-display tabular text-3xl ">Feed da comunidade</h1>
           <p className="text-sm text-muted-foreground">Cada check-in é um passo rumo aos R$ 1.000.</p>
         </div>
-        <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90">
+        <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-sm bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90">
           <Plus className="h-4 w-4" /> Check-in
         </button>
       </div>

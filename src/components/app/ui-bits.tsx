@@ -12,7 +12,7 @@ export function Progress({ pct, className = "" }: { pct: number; className?: str
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] ${className}`}>{children}</div>;
+  return <div className={`rounded-sm border-2 border-border bg-card p-5 shadow-[var(--shadow-card)] ${className}`}>{children}</div>;
 }
 
 export function AnnouncementBanner() {
@@ -21,8 +21,8 @@ export function AnnouncementBanner() {
   const a = avisos[i % avisos.length];
   if (!a) return null;
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-secondary px-4 py-3 text-secondary-foreground">
-      <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-accent-foreground">
+    <div className="flex items-center gap-3 rounded-sm bg-secondary px-4 py-3 text-secondary-foreground">
+      <span className="bg-accent px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-accent-foreground">
         {a.tipo === "aviso" ? "Aviso" : "Atividade"}
       </span>
       <p className="flex-1 text-sm">{a.texto}</p>
@@ -49,7 +49,7 @@ export function CheckInPost({ c }: { c: CheckIn }) {
           <Link to="/perfil/$id" params={{ id: c.membroId }} className="font-semibold hover:underline">{m?.nome}</Link>
           <p className="text-xs text-muted-foreground">{dataCurta(c.data)}</p>
         </div>
-        <span className="rounded-full bg-primary/10 px-3 py-1 font-display text-sm font-bold text-primary">+{brl(c.valor)}</span>
+        <span className="border-2 border-primary px-2 py-0.5 font-display tabular text-sm font-bold text-primary">+{brl(c.valor)}</span>
       </div>
       {c.foto && <img src={c.foto} alt="Foto do check-in" className="max-h-96 w-full object-cover" />}
       <div className="p-4">

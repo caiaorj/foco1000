@@ -88,7 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Hind:wght@400;500;600;700&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -123,16 +123,16 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
+        <header className="sticky top-0 z-40 border-b-2 border-border bg-background">
           <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
             <Link to="/" className="font-display text-lg font-extrabold">
-              Foco <span className="rounded-md bg-accent px-1.5 text-accent-foreground">Mil</span> Reais
+              FOCO <span className="bg-accent px-1 text-accent-foreground">R$1.000</span>
             </Link>
             <nav className="ml-auto flex gap-1">
               {nav.map((n) => (
                 <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
-                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
-                  activeProps={{ className: "bg-secondary text-foreground" }}>
+                  className="px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                  activeProps={{ className: "bg-foreground text-background" }}>
                   {n.label}
                 </Link>
               ))}
