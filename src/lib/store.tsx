@@ -66,6 +66,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!uid) { setDb(VAZIO); setMeId(""); setReady(true); return; }
     setMeId(uid);
 
+    // Garante que o perfil existe (contas antigas podem não ter linha em profiles).
+    const { data: meuPerfil } = await sb.from("profiles").select("id").eq("id", uid).maybeSingle();
+    if (!meuPerfil) {
+      const nome = (userData.user?.user_metadata?.nome as string | undefined) || userData.user?.email?.split("@")[0] || "Participante";
+      await sb.from("profiles").upsert({ id: uid, nome }, { onConflict: "id" });
+    }
+
     const [perfis, negocios, checkins, reacoes, favoritos, live, materiais, papel] = await Promise.all([
       sb.from("profiles").select("id, nome"),
       sb.from("businesses").select("user_id, nome, descricao, nicho, meta"),
