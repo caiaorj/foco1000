@@ -135,8 +135,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const toggleReacao = useCallback(async (id: string, r: Reacao) => {
     if (id.startsWith("tmp-")) return;
-    const { data: u } = await supabase.auth.getUser();
-    const uid = u.user?.id;
+    const { data: u } = await supabase.auth.getSession();
+    const uid = u.session?.user.id;
     if (!uid) { toast.error("Entre na sua conta para reagir."); return; }
     const tinha = db.checkins.find((c) => c.id === id)?.minhas.includes(r) ?? false;
     setDb((d) => ({
