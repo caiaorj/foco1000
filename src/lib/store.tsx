@@ -123,7 +123,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // Recarrega os dados quando o usuário entra na conta (sem recarregar a página).
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "USER_UPDATED") carregar();
+      if (event === "SIGNED_OUT") { setDb(VAZIO); setMeId(""); return; }
+      // setTimeout evita travar o Supabase ao chamar auth dentro do próprio evento.
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+        setDb(VAZIO);
+        setTimeout(() => { carregar(); }, 0);
+      }
     });
     return () => subscription.unsubscribe();
   }, [carregar]);
