@@ -12,9 +12,10 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { StoreProvider, useStore, totalDe, CURRENT_USER_ID } from "../lib/store";
+import { StoreProvider, useStore, totalDe } from "../lib/store";
 import { CheckInModal } from "../components/app/CheckInModal";
-import { Plus } from "lucide-react";
+import { Plus, LogOut } from "lucide-react";
+import { supabase } from "../integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -122,10 +123,16 @@ const nav = [
 ] as const;
 
 function Header() {
-  const { checkins, negocios } = useStore();
+  const { checkins, negocios, meId } = useStore();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const meta = negocios.find((n) => n.membroId === CURRENT_USER_ID)?.meta ?? 1000;
-  const total = totalDe(checkins, CURRENT_USER_ID);
+  const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;
+  const total = totalDe(checkins, meId);
+
+  async function sair() {
+    await supabase.auth.signOut();
+    router.navigate({ to: "/auth", replace: true });
+  }
   const fmt = (v: number) => "R$ " + v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
   return (
     <header className="border-b border-border bg-background">
