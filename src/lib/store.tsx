@@ -132,22 +132,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }).then(({ error }) => { if (error) console.error(error); carregar(); });
   }, [meId, carregar]);
 
-  const toggleReacao = useCallback((id: string, r: Reacao) => {
-    if (!meId || id.startsWith("tmp-")) return;
+  const toggleReacao = useCallback(async (id: string, r: Reacao) => {
+    if (id.startsWith("tmp-")) return;
+    const { data: u } = await supabase.auth.getUser();
+    const uid = u.user?.id;
+    if (!uid) { toast.error("Entre na sua conta para reagir."); return; }
+    const tinha = db.checkins.find((c) => c.id === id)?.minhas.includes(r) ?? false;
     setDb((d) => ({
       ...d,
       checkins: d.checkins.map((c) => {
         if (c.id !== id) return c;
-        const tem = c.minhas.includes(r);
-        return { ...c, minhas: tem ? c.minhas.filter((x) => x !== r) : [...c.minhas, r], reacoes: { ...c.reacoes, [r]: c.reacoes[r] + (tem ? -1 : 1) } };
+        return { ...c, minhas: tinha ? c.minhas.filter((x) => x !== r) : [...c.minhas, r], reacoes: { ...c.reacoes, [r]: Math.max(0, c.reacoes[r] + (tinha ? -1 : 1)) } };
       }),
     }));
-    const tinha = db.checkins.find((c) => c.id === id)?.minhas.includes(r);
-    const q = tinha
-      ? sb.from("reactions").delete().eq("checkin_id", id).eq("user_id", meId).eq("tipo", r)
-      : sb.from("reactions").insert({ checkin_id: id, user_id: meId, tipo: r });
-    q.then(({ error }) => { if (error) { console.error(error); carregar(); } });
-  }, [meId, db.checkins, carregar]);
+    const { error } = tinha
+      ? await sb.from("reactions").delete().eq("checkin_id", id).eq("user_id", uid).eq("tipo", r)
+      : await sb.from("reactions").upsert({ checkin_id: id, user_id: uid, tipo: r }, { onConflict: "checkin_id,user_id,tipo", ignoreDuplicates: true });
+    if (error) { console.error(error); toast.error("Não foi possível salvar a reação: " + error.message); carregar(); }
+  }, [db.checkins, carregar]);
 
   const toggleFavorito = useCallback((id: string) => {
     if (!meId || id.startsWith("tmp-")) return;
