@@ -16,7 +16,7 @@ export type CheckIn = {
 };
 export type Aviso = { id: string; tipo: "aviso" | "atividade"; texto: string };
 
-type DB = { membros: Membro[]; negocios: Negocio[]; checkins: CheckIn[]; avisos: Aviso[] };
+type DB = { membros: Membro[]; negocios: Negocio[]; checkins: CheckIn[]; avisos: Aviso[]; favoritos: string[] };
 
 const STORAGE_KEY = "foco-mil-reais:v1";
 
@@ -52,6 +52,7 @@ function seed(): DB {
       { id: "c8", membroId: "u-elisa", data: "2026-10-01T10:00:00Z", texto: "Feirinha do bairro: vendi 6 velas.", valor: 210, foto: "https://picsum.photos/seed/elisa1/800/500", curtidas: ["u-ana"] },
       { id: "c9", membroId: "u-carla", data: "2026-09-28T10:00:00Z", texto: "Duas aulas experimentais convertidas.", valor: 160, curtidas: [] },
     ],
+    favoritos: [],
     avisos: [
       { id: "a1", tipo: "aviso", texto: "Live de mentoria nesta quinta, 20h — traga sua maior dúvida de vendas." },
       { id: "a2", tipo: "atividade", texto: "Desafio da semana: faça 10 ofertas diretas e registre no check-in." },
@@ -64,6 +65,7 @@ type Store = DB & {
   ready: boolean;
   addCheckIn: (c: { texto: string; valor: number; foto?: string }) => void;
   toggleCurtida: (id: string) => void;
+  toggleFavorito: (id: string) => void;
   updateNegocio: (n: Partial<Negocio>) => void;
   updateMembro: (m: Partial<Membro>) => void;
   resetDados: () => void;
@@ -78,7 +80,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setDb(JSON.parse(raw));
+      if (raw) setDb({ ...seed(), ...JSON.parse(raw) });
     } catch {}
     setReady(true);
   }, []);
@@ -103,6 +105,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }),
     }));
   }, []);
+  const toggleFavorito = useCallback((id: string) => {
+    setDb((d) => ({ ...d, favoritos: d.favoritos.includes(id) ? d.favoritos.filter((x) => x !== id) : [...d.favoritos, id] }));
+  }, []);
   const updateNegocio = useCallback((n: Partial<Negocio>) => {
     setDb((d) => ({ ...d, negocios: d.negocios.map((x) => x.membroId === CURRENT_USER_ID ? { ...x, ...n } : x) }));
   }, []);
@@ -111,7 +116,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
   const resetDados = useCallback(() => setDb(seed()), []);
 
-  const value = useMemo(() => ({ ...db, ready, addCheckIn, toggleCurtida, updateNegocio, updateMembro, resetDados }), [db, ready, addCheckIn, toggleCurtida, updateNegocio, updateMembro, resetDados]);
+  const value = useMemo(() => ({ ...db, ready, addCheckIn, toggleCurtida, toggleFavorito, updateNegocio, updateMembro, resetDados }), [db, ready, addCheckIn, toggleCurtida, toggleFavorito, updateNegocio, updateMembro, resetDados]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

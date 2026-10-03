@@ -33,10 +33,10 @@ export function ShareCard({ nome, negocio, total, meta }: Props) {
   return (
     <div>
       <div ref={ref} className="aspect-square w-full rounded-sm bg-foreground p-8 text-background flex flex-col justify-between">
-        <p className="font-display tabular text-sm font-bold tracking-[0.2em]">FOCO MIL REAIS</p>
+        <p className="label-mono !text-background/70">Foco Mil Reais · desafio</p>
         <div>
           <p className="text-sm opacity-80">{nome} · {negocio}</p>
-          <p className="font-display tabular text-5xl ">{brl(total)}</p>
+          <p className="num text-4xl font-semibold ">{brl(total)}</p>
           <p className="mt-1 text-sm opacity-80">de {brl(meta)} — {pct.toFixed(0)}% da meta</p>
           <div className="mt-4 h-3 w-full rounded-full bg-background/25">
             <div data-accent className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
