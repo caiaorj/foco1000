@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { brl, CURRENT_USER_ID, useRanking } from "@/lib/store";
-import { Card, Progress } from "@/components/app/ui-bits";
+import { AnnouncementBanner, Avatar, Card, Progress } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/ranking")({
   head: () => ({
     meta: [
       { title: "Ranking — Foco Mil Reais" },
-      { name: "description", content: "Quem está mais perto dos primeiros R$ 1.000 na comunidade." },
+      { name: "description", content: "Ranking de execução: consistência primeiro, faturamento depois." },
       { property: "og:title", content: "Ranking — Foco Mil Reais" },
-      { property: "og:description", content: "Quem está mais perto dos primeiros R$ 1.000 na comunidade." },
+      { property: "og:description", content: "Ranking de execução: consistência primeiro, faturamento depois." },
     ],
   }),
   component: Ranking,
@@ -17,26 +17,41 @@ export const Route = createFileRoute("/ranking")({
 function Ranking() {
   const ranking = useRanking();
   return (
-    <div className="space-y-5">
-      <h1 className="font-display text-3xl font-semibold ">Ranking</h1>
-      <div className="space-y-3">
-        {ranking.map((r, i) => (
-          <Link key={r.membro.id} to="/perfil/$id" params={{ id: r.membro.id }} className="block">
-            <Card className={`flex items-center gap-4 transition hover:-translate-x-0.5 hover:-translate-y-0.5 ${r.membro.id === CURRENT_USER_ID ? "ring-2 ring-accent" : ""}`}>
-              <span className={`w-8 text-center font-display text-2xl  ${i < 3 ? "text-accent" : "text-muted-foreground"}`}>{i + 1}</span>
-              <img src={r.membro.avatar} alt="" className="h-11 w-11  bg-muted" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="truncate font-semibold">{r.membro.nome} <span className="text-xs font-normal text-muted-foreground">· {r.negocio.nome}</span></p>
-                  <p className="num font-semibold">{brl(r.total)}</p>
+    <div className="space-y-6">
+      <AnnouncementBanner />
+      <Card>
+        <div className="border-b border-border p-5">
+          <p className="label-mono">Ranking de execução</p>
+          <h1 className="font-display text-xl font-semibold">Consistência primeiro, faturamento depois</h1>
+        </div>
+        <ol>
+          {ranking.map((r, i) => (
+            <li key={r.membro.id} className="border-b border-border last:border-0">
+              <Link to="/perfil/$id" params={{ id: r.membro.id }} className={`flex items-center gap-4 px-5 py-3 hover:bg-muted/60 ${r.membro.id === CURRENT_USER_ID ? "bg-muted/50" : ""}`}>
+                <span className="num w-6 text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                <Avatar nome={r.membro.nome} tone="light" size="sm" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{r.membro.nome}</p>
+                  <p className="truncate text-xs text-muted-foreground">{r.negocio.nome}</p>
                 </div>
-                <Progress pct={r.pct} className="mt-2 h-2" />
-                <p className="mt-1 text-xs text-muted-foreground">{r.pct.toFixed(0)}% da meta · {r.qtd} check-ins {r.pct >= 100 && "· Meta batida"}</p>
-              </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
+                <div className="hidden w-20 text-right sm:block">
+                  <p className="label-mono !text-[10px]">Sequência</p>
+                  <p className="num text-sm font-semibold">{r.sequencia}d</p>
+                </div>
+                <div className="hidden w-20 text-right sm:block">
+                  <p className="label-mono !text-[10px]">Dias ativos</p>
+                  <p className="num text-sm">{r.diasAtivos}</p>
+                </div>
+                <div className="w-24 text-right">
+                  <p className="label-mono !text-[10px]">Acumulado</p>
+                  <p className="num text-sm font-semibold text-accent">{brl(r.total)}</p>
+                  <Progress pct={r.pct} className="mt-1" />
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </Card>
     </div>
   );
 }

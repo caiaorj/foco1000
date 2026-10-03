@@ -19,8 +19,8 @@ function Feed() {
   return (
     <div className="space-y-6">
       <AnnouncementBanner />
-      <SectionTitle title="Relatos da turma" meta={`${checkins.length} check-ins`} />
-      <div className="space-y-4">
+      <SectionTitle title="Feed da comunidade" meta={`${checkins.length} check-ins`} />
+      <div className="space-y-5">
         {[...checkins].sort((a, b) => b.data.localeCompare(a.data)).map((c) => <CheckInPost key={c.id} c={c} />)}
       </div>
     </div>

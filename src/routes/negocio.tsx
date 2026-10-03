@@ -1,74 +1,121 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { brl, CURRENT_USER_ID, totalDe, useStore } from "@/lib/store";
-import { Card, Progress } from "@/components/app/ui-bits";
+import { useState } from "react";
+import { Pencil, Share2, X } from "lucide-react";
+import { brl, CURRENT_USER_ID, quando, totalDe, useStore } from "@/lib/store";
+import { AnnouncementBanner, Card, Progress } from "@/components/app/ui-bits";
 import { ShareCard } from "@/components/app/ShareCard";
-import { CheckInModal } from "@/components/app/CheckInModal";
 
 export const Route = createFileRoute("/negocio")({
   head: () => ({
     meta: [
       { title: "Meu Negócio — Foco Mil Reais" },
-      { name: "description", content: "Cadastre seu projeto, defina a meta e acompanhe o faturamento acumulado." },
+      { name: "description", content: "Seu projeto, sua meta e o faturamento acumulado rumo aos R$ 1.000." },
       { property: "og:title", content: "Meu Negócio — Foco Mil Reais" },
-      { property: "og:description", content: "Cadastre seu projeto, defina a meta e acompanhe o faturamento acumulado." },
+      { property: "og:description", content: "Seu projeto, sua meta e o faturamento acumulado rumo aos R$ 1.000." },
     ],
   }),
   component: MeuNegocio,
 });
 
+const inp = "mt-1.5 w-full border border-input bg-muted/60 p-2.5 text-sm outline-none focus:border-foreground";
+
 function MeuNegocio() {
-  const { negocios, membros, checkins, updateNegocio, updateMembro, resetDados } = useStore();
+  const { negocios, checkins, updateNegocio } = useStore();
   const neg = negocios.find((n) => n.membroId === CURRENT_USER_ID)!;
-  const eu = membros.find((m) => m.id === CURRENT_USER_ID)!;
   const total = totalDe(checkins, CURRENT_USER_ID);
   const pct = Math.min(100, (total / neg.meta) * 100);
-  const [form, setForm] = useState({ ...neg, apelido: eu.nome });
-  const [salvo, setSalvo] = useState(false);
-  const [open, setOpen] = useState(false);
-  useEffect(() => setForm({ ...neg, apelido: eu.nome }), [neg, eu.nome]);
+  const meus = checkins.filter((c) => c.membroId === CURRENT_USER_ID);
+  const [edit, setEdit] = useState(false);
+  const [share, setShare] = useState(false);
+  const [form, setForm] = useState(neg);
 
+  const abrir = () => { setForm(neg); setEdit(true); };
   const salvar = (e: React.FormEvent) => {
     e.preventDefault();
-    updateNegocio({ nome: form.nome.trim() || "Meu negócio", descricao: form.descricao, nicho: form.nicho, meta: Math.max(1, Number(form.meta) || 1000) });
-    updateMembro({ nome: form.apelido.trim() || "Você" });
-    setSalvo(true); setTimeout(() => setSalvo(false), 2000);
+    updateNegocio({ nome: form.nome.trim().slice(0, 80) || "Meu projeto", nicho: form.nicho.trim().slice(0, 40) || "A definir", descricao: form.descricao.trim().slice(0, 300), meta: Math.max(1, Number(form.meta) || 1000) });
+    setEdit(false);
   };
-  const inp = "mt-1 w-full rounded-sm border border-input bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring";
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-3xl font-semibold ">Meu Negócio</h1>
-      <Card className="bg-primary text-primary-foreground border-0">
-        <p className="text-sm opacity-80">Faturamento acumulado</p>
-        <p className="num text-4xl font-semibold ">{brl(total)}</p>
-        <p className="mt-1 text-sm opacity-80">Meta: {brl(neg.meta)} · faltam {brl(Math.max(0, neg.meta - total))}</p>
-        <div className="mt-4 h-3 w-full  bg-primary-foreground/25">
-          <div className="h-full bg-accent transition-all" style={{ width: `${pct}%` }} />
+      <AnnouncementBanner />
+      <Card>
+        <div className="border-b border-border p-5">
+          {edit ? (
+            <form onSubmit={salvar} className="space-y-3">
+              <p className="label-mono">Editar negócio</p>
+              <label className="block"><span className="label-mono">Nome</span><input className={inp} value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></label>
+              <label className="block"><span className="label-mono">Nicho</span><input className={inp} value={form.nicho} onChange={(e) => setForm({ ...form, nicho: e.target.value })} /></label>
+              <label className="block"><span className="label-mono">Breve descrição</span><textarea className={inp} rows={2} value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></label>
+              <label className="block"><span className="label-mono">Meta (R$)</span><input type="number" min={1} className={`${inp} num`} value={form.meta} onChange={(e) => setForm({ ...form, meta: Number(e.target.value) })} /></label>
+              <div className="flex gap-2">
+                <button className="bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground">Salvar</button>
+                <button type="button" onClick={() => setEdit(false)} className="border border-border px-4 py-2 text-xs font-bold uppercase tracking-wider">Cancelar</button>
+              </div>
+            </form>
+          ) : (
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="label-mono">Meu negócio</p>
+                <h1 className="mt-1 font-display text-2xl font-semibold">{neg.nome}</h1>
+                <p className="text-sm text-muted-foreground">{neg.nicho}</p>
+                {neg.descricao ? <p className="mt-2 text-sm">{neg.descricao}</p> : (
+                  <button onClick={abrir} className="mt-2 border-b border-dashed border-foreground font-mono text-[11px] uppercase tracking-wider">+ Adicionar breve descrição</button>
+                )}
+              </div>
+              <button onClick={abrir} aria-label="Editar negócio" className="p-1 text-muted-foreground hover:text-foreground"><Pencil className="h-4 w-4" /></button>
+            </div>
+          )}
         </div>
-        <button onClick={() => setOpen(true)} className="mt-5 rounded-sm bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground">Registrar check-in</button>
+        <div className="p-5">
+          <p className="label-mono">Rumo aos {brl(neg.meta)}</p>
+          <div className="mt-1 flex items-end justify-between gap-3">
+            <p className="font-display text-4xl font-semibold text-accent">{brl(total)}</p>
+            <div className="flex items-center gap-3 pb-1">
+              <span className="num text-xs text-muted-foreground">{pct.toFixed(0)}%</span>
+              <button onClick={() => setShare(true)} className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider hover:bg-muted">
+                <Share2 className="h-3.5 w-3.5" /> Compartilhar
+              </button>
+            </div>
+          </div>
+          <Progress pct={pct} className="mt-3 !h-1.5" />
+          <p className="mt-3 text-xs text-muted-foreground">
+            {total >= neg.meta ? "Meta batida. Hora de mirar a próxima." : <>Faltam <b className="num text-foreground">{brl(neg.meta - total)}</b> para bater a meta do desafio.</>}
+          </p>
+        </div>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <h2 className="font-display text-xl font-bold">Cadastro do projeto</h2>
-          <form onSubmit={salvar} className="mt-3 space-y-3">
-            <div><label className="text-sm font-semibold">Seu nome</label><input className={inp} value={form.apelido} maxLength={60} onChange={(e) => setForm({ ...form, apelido: e.target.value })} /></div>
-            <div><label className="text-sm font-semibold">Nome do negócio</label><input className={inp} value={form.nome} maxLength={80} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></div>
-            <div><label className="text-sm font-semibold">Nicho</label><input className={inp} value={form.nicho} maxLength={40} onChange={(e) => setForm({ ...form, nicho: e.target.value })} /></div>
-            <div><label className="text-sm font-semibold">Descrição</label><textarea className={inp} rows={3} value={form.descricao} maxLength={400} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></div>
-            <div><label className="text-sm font-semibold">Meta (R$)</label><input type="number" min={1} className={inp} value={form.meta} onChange={(e) => setForm({ ...form, meta: Number(e.target.value) })} /></div>
-            <button className="w-full rounded-sm bg-primary py-3 text-sm font-mono text-xs uppercase tracking-widest font-semibold text-primary-foreground">{salvo ? "Salvo ✓" : "Salvar"}</button>
-          </form>
-          <button onClick={() => confirm("Restaurar os dados de exemplo?") && resetDados()} className="mt-3 text-xs text-muted-foreground underline">Restaurar dados de exemplo</button>
-        </Card>
-        <Card>
-          <h2 className="mb-3 font-display text-xl font-bold">Compartilhe seu progresso</h2>
-          <ShareCard nome={eu.nome} negocio={neg.nome} total={total} meta={neg.meta} />
-        </Card>
-      </div>
-      <Progress pct={pct} className="hidden" />
-      <CheckInModal open={open} onClose={() => setOpen(false)} />
+      <Card>
+        <div className="border-b border-border p-5">
+          <p className="label-mono">Histórico</p>
+          <h2 className="font-display text-xl font-semibold">Seus check-ins ({meus.length})</h2>
+        </div>
+        {meus.length ? (
+          <ul>
+            {meus.map((c) => (
+              <li key={c.id} className="flex items-start gap-4 border-b border-border p-5 last:border-0">
+                <span className="label-mono w-16 shrink-0 pt-0.5">{quando(c.data)}</span>
+                <p className="flex-1 text-sm">{c.texto}</p>
+                <span className="num text-sm font-semibold text-accent">{brl(c.valor)}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="p-5 py-8 text-sm text-muted-foreground">Nenhum check-in ainda. Registre sua primeira execução pelo botão "Novo check-in".</p>
+        )}
+      </Card>
+
+      {share && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/45 p-4" onClick={() => setShare(false)}>
+          <div className="w-full max-w-sm bg-card p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="label-mono">Compartilhar progresso</p>
+              <button onClick={() => setShare(false)} aria-label="Fechar"><X className="h-4 w-4" /></button>
+            </div>
+            <ShareCard nome="Você" negocio={neg.nome} total={total} meta={neg.meta} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
