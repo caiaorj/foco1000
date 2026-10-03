@@ -73,6 +73,9 @@ function DesafioPage() {
         curso que você nunca termina, aqui você mostra todo dia o que fez — até faturar os seus
         primeiros R$ 1.000.
       </p>
+      <p className="label-mono mt-4 text-center text-[11px] text-muted-foreground">
+        Apenas 30 vagas · 100% gratuito · Todo mundo aprende junto
+      </p>
 
       <div className="mt-8 flex justify-center">
         <Link
@@ -113,8 +116,9 @@ function DesafioPage() {
       <section className="mt-14 border border-foreground bg-card p-6 text-center">
         <h2 className="font-serif text-2xl">Pronto para prestar contas?</h2>
         <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-          A vaga é gratuita. O compromisso é diário. Entre, cadastre seu negócio e faça o primeiro
-          check-in hoje.
+          São <strong className="text-foreground">apenas 30 vagas</strong> e a participação é{" "}
+          <strong className="text-foreground">100% gratuita</strong> — todo mundo aprende junto. Entre,
+          cadastre seu negócio e faça o primeiro check-in hoje.
         </p>
         <Link
           to="/auth"
