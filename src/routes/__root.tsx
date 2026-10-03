@@ -145,7 +145,7 @@ function Header() {
             <span className="font-display text-xl font-semibold">Foco <span className="text-accent">Mil Reais</span></span>
           </Link>
           <div className="ml-auto hidden text-right sm:block">
-            <span className="label-mono block">Olá{primeiroNome ? "," : ""}</span>
+            <span className="label-mono block">OLÁ{primeiroNome ? "," : ""}</span>
             <span className="num text-sm">{primeiroNome || "bem-vindo(a)"}</span>
           </div>
           <div className="text-right">
