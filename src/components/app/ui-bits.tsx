@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Bookmark, CalendarDays, Check, Flame, Hand } from "lucide-react";
+import { ArrowUpRight, Bookmark, CalendarDays, Check, Flame, Hand, Trash2 } from "lucide-react";
 import { type ReactNode } from "react";
 import { brl, iniciais, quando, useStore, type CheckIn, type Reacao } from "@/lib/store";
 
@@ -75,7 +75,7 @@ function Nota({ titulo, texto, tom }: { titulo: string; texto: string; tom: "cer
 }
 
 export function CheckInPost({ c }: { c: CheckIn }) {
-  const { membros, negocios, toggleReacao, toggleFavorito, favoritos } = useStore();
+  const { membros, negocios, toggleReacao, toggleFavorito, favoritos, isAdmin, removerCheckIn } = useStore();
   const m = membros.find((x) => x.id === c.membroId);
   const neg = negocios.find((x) => x.membroId === c.membroId);
   const fav = favoritos.includes(c.id);
@@ -99,6 +99,12 @@ export function CheckInPost({ c }: { c: CheckIn }) {
           className={`flex h-8 w-8 items-center justify-center border border-border ${fav ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"}`}>
           <Bookmark className="h-3.5 w-3.5" fill={fav ? "currentColor" : "none"} />
         </button>
+        {isAdmin && !c.id.startsWith("tmp-") && (
+          <button onClick={() => { if (confirm("Apagar este check-in? Não dá para desfazer.")) removerCheckIn(c.id); }} aria-label="Apagar check-in (admin)" title="Apagar check-in (admin)"
+            className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground hover:text-destructive">
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
       </header>
       <div className="space-y-4 p-5">
         <div>

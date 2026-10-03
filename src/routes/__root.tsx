@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Foco Mil Reais" },
-      { name: "description", content: "Accountability para chegar aos primeiros R$ 1.000 faturados." },
+      { name: "description", content: "Prestação de contas diária para chegar aos primeiros R$ 1.000 faturados." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -194,7 +194,7 @@ function RootComponent() {
     });
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
-  const ehAuth = router.state.location.pathname === "/auth";
+  const ehAuth = router.state.location.pathname === "/auth" || router.state.location.pathname === "/reset-password";
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
