@@ -37,9 +37,9 @@ function Perfil() {
           </div>
         </div>
         {r.negocio.descricao && <p className="border-b border-border p-5 text-sm">{r.negocio.descricao}</p>}
-        <div className="grid grid-cols-4 border-b border-border">
+        <div className="grid grid-cols-2 border-b border-border sm:grid-cols-4">
           {stats.map(([k, v]) => (
-            <div key={k} className="border-r border-border p-4 last:border-0">
+            <div key={k} className="border-b border-r border-border p-4 even:border-r-0 sm:border-b-0 sm:even:border-r sm:last:border-r-0">
               <p className="label-mono !text-[10px]">{k}</p>
               <p className="num mt-1 text-lg font-semibold">{v}</p>
             </div>

@@ -140,29 +140,29 @@ function Header() {
   }
   const fmt = (v: number) => "R$ " + v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
   return (
-    <header className="border-b border-border bg-background">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto max-w-3xl px-4 pt-4">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="leading-tight">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="min-w-0 leading-tight">
             <span className="label-mono block">Desafio em execução</span>
-            <span className="font-display text-xl font-semibold">Foco <span className="text-accent">Mil Reais</span></span>
+            <span className="block truncate font-display text-lg font-semibold sm:text-xl">Foco <span className="text-accent">Mil Reais</span></span>
           </Link>
           <div className="ml-auto hidden text-right sm:block">
             <span className="label-mono block">OLÁ{primeiroNome ? "," : ""}</span>
             <span className="num text-sm">{primeiroNome || "bem-vindo(a)"}</span>
           </div>
-          <div className="text-right">
+          <div className="ml-auto shrink-0 text-right sm:ml-0">
             <span className="label-mono block">Sua meta</span>
             <span className="num text-sm"><span className="text-accent">{fmt(total)}</span> / {fmt(meta)}</span>
           </div>
-          <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-primary-foreground hover:opacity-90">
+          <button onClick={() => setOpen(true)} className="hidden shrink-0 items-center gap-2 bg-primary px-4 sm:inline-flex py-2.5 text-xs font-bold uppercase tracking-wide text-primary-foreground hover:opacity-90">
             <Plus className="h-4 w-4" /> Novo check-in
           </button>
-          <button onClick={sair} aria-label="Sair" title="Sair" className="p-2 text-muted-foreground hover:text-foreground">
+          <button onClick={sair} aria-label="Sair" title="Sair" className="-mr-2 shrink-0 p-2 text-muted-foreground hover:text-foreground">
             <LogOut className="h-4 w-4" />
           </button>
         </div>
-        <nav className="-mx-1 mt-3 flex gap-1 overflow-x-auto pb-3">
+        <nav className="-mx-4 mt-3 flex gap-1 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
               className="whitespace-nowrap px-3 py-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
@@ -179,6 +179,10 @@ function Header() {
           )}
         </nav>
       </div>
+      <button onClick={() => setOpen(true)} aria-label="Novo check-in"
+        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-40 inline-flex h-14 items-center gap-2 bg-primary px-5 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow-lg sm:hidden">
+        <Plus className="h-5 w-5" /> Check-in
+      </button>
       <CheckInModal open={open} onClose={() => setOpen(false)} />
     </header>
   );
@@ -204,7 +208,7 @@ function RootComponent() {
         ) : (
           <>
             <Header />
-            <main className="mx-auto max-w-3xl px-4 py-6">
+            <main className="mx-auto max-w-3xl px-4 pb-28 pt-5 sm:py-6">
               <Outlet />
             </main>
           </>
