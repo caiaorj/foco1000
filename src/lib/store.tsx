@@ -42,7 +42,7 @@ function seed(): DB {
       { membroId: "u-elisa", nome: "Luz da Elisa", descricao: "Velas artesanais com essências naturais.", nicho: "Artesanato", meta: 1000 },
     ],
     checkins: [
-      { id: "c1", membroId: "u-ana", data: "2026-10-03T12:10:00Z", texto: "Fechei mais um pacote com uma clínica de estética! Atingi a meta 🎉", valor: 180, foto: "https://picsum.photos/seed/ana1/800/500", curtidas: ["u-bruno", "u-carla"] },
+      { id: "c1", membroId: "u-ana", data: "2026-10-03T12:10:00Z", texto: "Fechei mais um pacote com uma clínica de estética! Atingi a meta.", valor: 180, foto: "https://picsum.photos/seed/ana1/800/500", curtidas: ["u-bruno", "u-carla"] },
       { id: "c2", membroId: "u-bruno", data: "2026-10-03T09:30:00Z", texto: "Entreguei 50 brigadeiros para um aniversário.", valor: 125, foto: "https://picsum.photos/seed/bruno1/800/500", curtidas: ["u-ana"] },
       { id: "c3", membroId: "u-carla", data: "2026-10-02T20:00:00Z", texto: "Primeira aluna fechou o pacote mensal.", valor: 240, curtidas: [] },
       { id: "c4", membroId: "u-diego", data: "2026-10-02T15:00:00Z", texto: "Editei 3 Reels para um cliente novo.", valor: 150, foto: "https://picsum.photos/seed/diego1/800/500", curtidas: ["u-elisa"] },
