@@ -9,7 +9,7 @@ export const Route = createFileRoute("/desafio")({
       {
         name: "description",
         content:
-          "O Foco Mil Reais é um desafio de execução em comunidade: mostre todo dia o que você fez até faturar seus primeiros R$ 1.000. Veja as regras e participe.",
+          "O Foco Mil Reais é um desafio de execução em comunidade, 100% gratuito e com apenas 30 vagas: mostre todo dia o que você fez até faturar seus primeiros R$ 1.000.",
       },
       { property: "og:title", content: "Como ganhar 1000 reais: o desafio Foco Mil Reais" },
       {
