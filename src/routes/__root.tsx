@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { StoreProvider } from "../lib/store";
 
 function NotFoundComponent() {
   return (
@@ -78,21 +79,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Foco Mil Reais" },
+      { name: "description", content: "Accountability para chegar aos primeiros R$ 1.000 faturados." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -103,7 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -115,13 +111,38 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const nav = [
+  { to: "/", label: "Feed" },
+  { to: "/negocio", label: "Meu Negócio" },
+  { to: "/ranking", label: "Ranking" },
+] as const;
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <StoreProvider>
+        <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
+          <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
+            <Link to="/" className="font-display text-lg font-extrabold">
+              Foco <span className="rounded-md bg-accent px-1.5 text-accent-foreground">Mil</span> Reais
+            </Link>
+            <nav className="ml-auto flex gap-1">
+              {nav.map((n) => (
+                <Link key={n.to} to={n.to} activeOptions={{ exact: true }}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  activeProps={{ className: "bg-secondary text-foreground" }}>
+                  {n.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </header>
+        <main className="mx-auto max-w-4xl px-4 py-8">
+          <Outlet />
+        </main>
+      </StoreProvider>
     </QueryClientProvider>
   );
 }
