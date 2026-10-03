@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
@@ -18,6 +19,8 @@ function AuthPage() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -26,6 +29,10 @@ function AuthPage() {
     e.preventDefault();
     setErro(null);
     setAviso(null);
+    if (modo === "cadastrar" && senha !== confirmarSenha) {
+      setErro("As senhas não coincidem. Confira e tente de novo.");
+      return;
+    }
     setCarregando(true);
     try {
       if (modo === "entrar") {
@@ -105,17 +112,59 @@ function AuthPage() {
           </div>
           <div>
             <label className="label-mono mb-1.5 block" htmlFor="senha">Senha</label>
-            <input
-              id="senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-              minLength={6}
-              placeholder="Mínimo de 6 caracteres"
-              className="w-full border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-accent"
-            />
+            <div className="relative">
+              <input
+                id="senha"
+                type={mostrarSenha ? "text" : "password"}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+                minLength={6}
+                placeholder="Mínimo de 6 caracteres"
+                className="w-full border border-border bg-background px-3 py-2.5 pr-11 text-sm outline-none focus:border-accent"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarSenha((v) => !v)}
+                aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+              >
+                {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
+          {modo === "cadastrar" && (
+            <div>
+              <label className="label-mono mb-1.5 block" htmlFor="confirmar-senha">Confirmar senha</label>
+              <div className="relative">
+                <input
+                  id="confirmar-senha"
+                  type={mostrarSenha ? "text" : "password"}
+                  value={confirmarSenha}
+                  onChange={(e) => setConfirmarSenha(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="Repita a senha"
+                  className="w-full border border-border bg-background px-3 py-2.5 pr-11 text-sm outline-none focus:border-accent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha((v) => !v)}
+                  aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                  title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                >
+                  {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {confirmarSenha.length > 0 && (
+                <p className={`mt-1.5 text-xs ${confirmarSenha === senha ? "text-accent" : "text-destructive"}`}>
+                  {confirmarSenha === senha ? "As senhas coincidem." : "As senhas não coincidem."}
+                </p>
+              )}
+            </div>
+          )}
 
           {erro && <p className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{erro}</p>}
           {aviso && <p className="border border-accent/40 bg-accent/10 px-3 py-2 text-sm">{aviso}</p>}
