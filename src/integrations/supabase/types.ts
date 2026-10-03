@@ -281,6 +281,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_remover_participante: {
+        Args: { _user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
