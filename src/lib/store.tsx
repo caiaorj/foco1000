@@ -63,11 +63,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setMeId(uid);
 
     const [perfis, negocios, checkins, reacoes, favoritos] = await Promise.all([
-      supabase.from("profiles").select("id, nome"),
-      supabase.from("businesses").select("user_id, nome, descricao, nicho, meta"),
-      supabase.from("checkins").select("*").order("created_at", { ascending: false }),
-      supabase.from("reactions").select("checkin_id, user_id, tipo"),
-      supabase.from("favorites").select("checkin_id").eq("user_id", uid),
+      sb.from("profiles").select("id, nome"),
+      sb.from("businesses").select("user_id, nome, descricao, nicho, meta"),
+      sb.from("checkins").select("*").order("created_at", { ascending: false }),
+      sb.from("reactions").select("checkin_id, user_id, tipo"),
+      sb.from("favorites").select("checkin_id").eq("user_id", uid),
     ]);
 
     const reacoesPorCheckin = new Map<string, { cont: Record<Reacao, number>; minhas: Reacao[] }>();
@@ -110,7 +110,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       reacoes: { palmas: 0, bora: 0, executou: 0 }, minhas: [], ...c,
     };
     setDb((d) => ({ ...d, checkins: [novo, ...d.checkins] }));
-    supabase.from("checkins").insert({
+    sb.from("checkins").insert({
       user_id: meId, texto: c.texto, valor: c.valor,
       horas: c.horas ?? null, deu_certo: c.deuCerto || null, deu_errado: c.deuErrado || null, foto: c.foto || null,
     }).then(({ error }) => { if (error) console.error(error); carregar(); });
@@ -128,8 +128,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }));
     const tinha = db.checkins.find((c) => c.id === id)?.minhas.includes(r);
     const q = tinha
-      ? supabase.from("reactions").delete().eq("checkin_id", id).eq("user_id", meId).eq("tipo", r)
-      : supabase.from("reactions").insert({ checkin_id: id, user_id: meId, tipo: r });
+      ? sb.from("reactions").delete().eq("checkin_id", id).eq("user_id", meId).eq("tipo", r)
+      : sb.from("reactions").insert({ checkin_id: id, user_id: meId, tipo: r });
     q.then(({ error }) => { if (error) { console.error(error); carregar(); } });
   }, [meId, db.checkins, carregar]);
 
@@ -138,15 +138,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const tinha = db.favoritos.includes(id);
     setDb((d) => ({ ...d, favoritos: tinha ? d.favoritos.filter((x) => x !== id) : [...d.favoritos, id] }));
     const q = tinha
-      ? supabase.from("favorites").delete().eq("checkin_id", id).eq("user_id", meId)
-      : supabase.from("favorites").insert({ checkin_id: id, user_id: meId });
+      ? sb.from("favorites").delete().eq("checkin_id", id).eq("user_id", meId)
+      : sb.from("favorites").insert({ checkin_id: id, user_id: meId });
     q.then(({ error }) => { if (error) { console.error(error); carregar(); } });
   }, [meId, db.favoritos, carregar]);
 
   const updateNegocio = useCallback((n: Partial<Negocio>) => {
     if (!meId) return;
     setDb((d) => ({ ...d, negocios: d.negocios.map((x) => x.membroId === meId ? { ...x, ...n } : x) }));
-    supabase.from("businesses").upsert({
+    sb.from("businesses").upsert({
       user_id: meId,
       ...(n.nome !== undefined && { nome: n.nome }),
       ...(n.descricao !== undefined && { descricao: n.descricao }),
