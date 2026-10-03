@@ -1,0 +1,1 @@
+ALTER TABLE public.live_settings ADD COLUMN IF NOT EXISTS meta numeric NOT NULL DEFAULT 1000;

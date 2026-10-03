@@ -139,6 +139,7 @@ export type Database = {
         Row: {
           id: number
           link: string
+          meta: number
           quando: string
           titulo: string
           updated_at: string
@@ -146,6 +147,7 @@ export type Database = {
         Insert: {
           id?: number
           link?: string
+          meta?: number
           quando?: string
           titulo?: string
           updated_at?: string
@@ -153,6 +155,7 @@ export type Database = {
         Update: {
           id?: number
           link?: string
+          meta?: number
           quando?: string
           titulo?: string
           updated_at?: string
