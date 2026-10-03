@@ -4,4 +4,4 @@
 - [x] Aba Favoritos (salvar relatos)
 - [x] Aba Participantes
 - [x] Banner de live de alinhamento
-- [ ] Publicar o app
+- [x] Publicar o app
