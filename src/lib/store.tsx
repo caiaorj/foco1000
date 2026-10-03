@@ -17,11 +17,11 @@ export type CheckIn = {
   membroId: string;
   data: string; // ISO
   texto: string;
-  deuCerto?: string;
-  deuErrado?: string;
+  deuCerto?: string | undefined;
+  deuErrado?: string | undefined;
   valor: number;
-  horas?: number;
-  foto?: string;
+  horas?: number | undefined;
+  foto?: string | undefined;
   reacoes: Record<Reacao, number>;
   minhas: Reacao[];
 };
