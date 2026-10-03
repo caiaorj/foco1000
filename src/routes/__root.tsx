@@ -148,7 +148,7 @@ function Header() {
             <span className="label-mono block">Olá{primeiroNome ? "," : ""}</span>
             <span className="num text-sm">{primeiroNome || "bem-vindo(a)"}</span>
           </div>
-          <div className="hidden text-right md:block">
+          <div className="text-right">
             <span className="label-mono block">Sua meta</span>
             <span className="num text-sm"><span className="text-accent">{fmt(total)}</span> / {fmt(meta)}</span>
           </div>
