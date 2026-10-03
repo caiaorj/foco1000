@@ -28,6 +28,10 @@ function AuthPage() {
     e.preventDefault();
     setErro(null);
     setAviso(null);
+    if (modo === "cadastrar" && senha !== confirmarSenha) {
+      setErro("As senhas não coincidem. Confira e tente de novo.");
+      return;
+    }
     setCarregando(true);
     try {
       if (modo === "entrar") {
