@@ -3,7 +3,7 @@ import { brl, useRanking, useStore } from "@/lib/store";
 import { Avatar, Card, CheckInPost, Progress, SectionTitle } from "@/components/app/ui-bits";
 import { ShareCard } from "@/components/app/ShareCard";
 
-export const Route = createFileRoute("/perfil/$id")({
+export const Route = createFileRoute("/_authenticated/perfil/$id")({
   head: () => ({
     meta: [
       { title: "Diário de bordo — Foco Mil Reais" },

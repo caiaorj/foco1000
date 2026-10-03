@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { brl, CURRENT_USER_ID, useRanking } from "@/lib/store";
 import { AnnouncementBanner, Avatar, Card, Progress } from "@/components/app/ui-bits";
 
-export const Route = createFileRoute("/ranking")({
+export const Route = createFileRoute("/_authenticated/ranking")({
   head: () => ({
     meta: [
       { title: "Ranking — Foco Mil Reais" },

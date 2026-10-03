@@ -5,7 +5,7 @@ import { brl, CURRENT_USER_ID, quando, totalDe, useStore } from "@/lib/store";
 import { AnnouncementBanner, Card, Progress } from "@/components/app/ui-bits";
 import { ShareCard } from "@/components/app/ShareCard";
 
-export const Route = createFileRoute("/negocio")({
+export const Route = createFileRoute("/_authenticated/negocio")({
   head: () => ({
     meta: [
       { title: "Meu Negócio — Foco Mil Reais" },
