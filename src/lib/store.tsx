@@ -207,7 +207,7 @@ export function sequenciaAtual(checkins: CheckIn[]) {
 export type Linha = { membro: Membro; negocio: Negocio; total: number; relatos: number; diasAtivos: number; sequencia: number; pct: number };
 
 export function useParticipantes(): Linha[] {
-  const { membros, negocios, checkins } = useStore();
+  const { membros, negocios, checkins, live } = useStore();
   return useMemo(() => membros.map((m) => {
     const negocio = negocios.find((n) => n.membroId === m.id) ?? { membroId: m.id, nome: "Meu projeto", descricao: "", nicho: "A definir", meta: Number(live.meta) || META_PADRAO };
     const meus = checkins.filter((c) => c.membroId === m.id);
@@ -218,7 +218,7 @@ export function useParticipantes(): Linha[] {
       sequencia: sequenciaAtual(meus),
       pct: Math.min(100, (total / (negocio.meta || META_PADRAO)) * 100),
     };
-  }), [membros, negocios, checkins]);
+  }), [membros, negocios, checkins, live]);
 }
 
 export function useRanking() {
