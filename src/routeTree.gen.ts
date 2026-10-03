@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as NegocioRouteImport } from './routes/negocio'
+import { Route as ParticipantesRouteImport } from './routes/participantes'
 import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as PerfilIdRouteImport } from './routes/perfil.$id'
 
@@ -19,9 +21,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NegocioRoute = NegocioRouteImport.update({
   id: '/negocio',
   path: '/negocio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParticipantesRoute = ParticipantesRouteImport.update({
+  id: '/participantes',
+  path: '/participantes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RankingRoute = RankingRouteImport.update({
@@ -37,34 +49,61 @@ const PerfilIdRoute = PerfilIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/favoritos': typeof FavoritosRoute
   '/negocio': typeof NegocioRoute
+  '/participantes': typeof ParticipantesRoute
   '/ranking': typeof RankingRoute
   '/perfil/$id': typeof PerfilIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/favoritos': typeof FavoritosRoute
   '/negocio': typeof NegocioRoute
+  '/participantes': typeof ParticipantesRoute
   '/ranking': typeof RankingRoute
   '/perfil/$id': typeof PerfilIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/favoritos': typeof FavoritosRoute
   '/negocio': typeof NegocioRoute
+  '/participantes': typeof ParticipantesRoute
   '/ranking': typeof RankingRoute
   '/perfil/$id': typeof PerfilIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/negocio' | '/ranking' | '/perfil/$id'
+  fullPaths:
+    | '/'
+    | '/favoritos'
+    | '/negocio'
+    | '/participantes'
+    | '/ranking'
+    | '/perfil/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/negocio' | '/ranking' | '/perfil/$id'
-  id: '__root__' | '/' | '/negocio' | '/ranking' | '/perfil/$id'
+  to:
+    | '/'
+    | '/favoritos'
+    | '/negocio'
+    | '/participantes'
+    | '/ranking'
+    | '/perfil/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/favoritos'
+    | '/negocio'
+    | '/participantes'
+    | '/ranking'
+    | '/perfil/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FavoritosRoute: typeof FavoritosRoute
   NegocioRoute: typeof NegocioRoute
+  ParticipantesRoute: typeof ParticipantesRoute
   RankingRoute: typeof RankingRoute
   PerfilIdRoute: typeof PerfilIdRoute
 }
@@ -78,11 +117,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/negocio': {
       id: '/negocio'
       path: '/negocio'
       fullPath: '/negocio'
       preLoaderRoute: typeof NegocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/participantes': {
+      id: '/participantes'
+      path: '/participantes'
+      fullPath: '/participantes'
+      preLoaderRoute: typeof ParticipantesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ranking': {
@@ -104,7 +157,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FavoritosRoute: FavoritosRoute,
   NegocioRoute: NegocioRoute,
+  ParticipantesRoute: ParticipantesRoute,
   RankingRoute: RankingRoute,
   PerfilIdRoute: PerfilIdRoute,
 }
