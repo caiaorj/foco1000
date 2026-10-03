@@ -123,11 +123,13 @@ const nav = [
 ] as const;
 
 function Header() {
-  const { checkins, negocios, meId } = useStore();
+  const { checkins, negocios, membros, meId } = useStore();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;
   const total = totalDe(checkins, meId);
+  const nomeCompleto = membros.find((m) => m.id === meId)?.nome ?? "";
+  const primeiroNome = nomeCompleto.split(" ").filter(Boolean)[0] ?? "";
 
   async function sair() {
     await supabase.auth.signOut();
@@ -143,6 +145,10 @@ function Header() {
             <span className="font-display text-xl font-semibold">Foco <span className="text-accent">Mil Reais</span></span>
           </Link>
           <div className="ml-auto hidden text-right sm:block">
+            <span className="label-mono block">Olá{primeiroNome ? "," : ""}</span>
+            <span className="num text-sm">{primeiroNome || "bem-vindo(a)"}</span>
+          </div>
+          <div className="hidden text-right md:block">
             <span className="label-mono block">Sua meta</span>
             <span className="num text-sm"><span className="text-accent">{fmt(total)}</span> / {fmt(meta)}</span>
           </div>
