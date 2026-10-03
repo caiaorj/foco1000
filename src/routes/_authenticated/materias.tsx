@@ -14,6 +14,7 @@ export const TIPOS = [
 export const tipoLabel = (t: string) => TIPOS.find((x) => x.v === t)?.l ?? t;
 
 export const Route = createFileRoute("/_authenticated/materias")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Matérias — Foco Mil Reais" },
@@ -33,6 +34,7 @@ function Materias() {
   const lista = materiais.filter((m) => m.publicado && (filtro === "todos" || m.tipo === filtro));
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Matérias: cursos, vídeos e materiais do desafio</h1>
       <SectionTitle title="Matérias" meta={`${lista.length} publicadas`} />
       <div className="flex flex-wrap gap-1">
         {[{ v: "todos", l: "Todos" }, ...TIPOS].map((t) => (

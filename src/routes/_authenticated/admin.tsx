@@ -7,6 +7,7 @@ import { Card, SectionTitle } from "@/components/app/ui-bits";
 import { TIPOS, tipoLabel } from "./materias";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Painel admin — Foco Mil Reais" },

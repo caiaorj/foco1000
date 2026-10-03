@@ -3,6 +3,7 @@ import { brl, useParticipantes, useStore } from "@/lib/store";
 import { AnnouncementBanner, Avatar, Progress, SectionTitle } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/_authenticated/participantes")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Participantes — Foco Mil Reais" },

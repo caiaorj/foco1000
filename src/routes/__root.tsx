@@ -79,12 +79,14 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Foco Mil Reais" },
+      { title: "Foco Mil Reais — Desafio dos primeiros R$ 1.000" },
       { name: "description", content: "Prestação de contas diária para chegar aos primeiros R$ 1.000 faturados." },
+      { property: "og:site_name", content: "Foco Mil Reais" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

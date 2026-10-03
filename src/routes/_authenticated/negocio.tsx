@@ -6,6 +6,7 @@ import { AnnouncementBanner, Card, Progress } from "@/components/app/ui-bits";
 import { ShareCard } from "@/components/app/ShareCard";
 
 export const Route = createFileRoute("/_authenticated/negocio")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Meu Negócio — Foco Mil Reais" },

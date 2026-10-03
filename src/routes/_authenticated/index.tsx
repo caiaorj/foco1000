@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { AnnouncementBanner, CheckInPost, SectionTitle } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/_authenticated/")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Feed — Foco Mil Reais" },
@@ -27,6 +28,7 @@ function Feed() {
   const bati = !!meu && meu.total >= meu.negocio.meta;
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Feed de check-ins do desafio Foco Mil Reais</h1>
       <div>
         <span className="label-mono block">OLÁ{primeiroNome ? "," : ""}</span>
         <span className="font-display text-2xl font-semibold leading-tight">{primeiroNome || "bem-vindo(a)"}</span>
