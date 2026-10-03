@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NegocioRouteImport } from './routes/negocio'
+import { Route as RankingRouteImport } from './routes/ranking'
+import { Route as PerfilIdRouteImport } from './routes/perfil.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NegocioRoute = NegocioRouteImport.update({
+  id: '/negocio',
+  path: '/negocio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilIdRoute = PerfilIdRouteImport.update({
+  id: '/perfil/$id',
+  path: '/perfil/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/negocio': typeof NegocioRoute
+  '/ranking': typeof RankingRoute
+  '/perfil/$id': typeof PerfilIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/negocio': typeof NegocioRoute
+  '/ranking': typeof RankingRoute
+  '/perfil/$id': typeof PerfilIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/negocio': typeof NegocioRoute
+  '/ranking': typeof RankingRoute
+  '/perfil/$id': typeof PerfilIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/negocio' | '/ranking' | '/perfil/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/negocio' | '/ranking' | '/perfil/$id'
+  id: '__root__' | '/' | '/negocio' | '/ranking' | '/perfil/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NegocioRoute: typeof NegocioRoute
+  RankingRoute: typeof RankingRoute
+  PerfilIdRoute: typeof PerfilIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/negocio': {
+      id: '/negocio'
+      path: '/negocio'
+      fullPath: '/negocio'
+      preLoaderRoute: typeof NegocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/$id': {
+      id: '/perfil/$id'
+      path: '/perfil/$id'
+      fullPath: '/perfil/$id'
+      preLoaderRoute: typeof PerfilIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NegocioRoute: NegocioRoute,
+  RankingRoute: RankingRoute,
+  PerfilIdRoute: PerfilIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
