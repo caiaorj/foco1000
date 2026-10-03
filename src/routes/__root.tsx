@@ -179,13 +179,20 @@ function RootComponent() {
     });
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
+  const ehAuth = router.state.location.pathname === "/auth";
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        <Header />
-        <main className="mx-auto max-w-3xl px-4 py-6">
+        {ehAuth ? (
           <Outlet />
-        </main>
+        ) : (
+          <>
+            <Header />
+            <main className="mx-auto max-w-3xl px-4 py-6">
+              <Outlet />
+            </main>
+          </>
+        )}
       </StoreProvider>
     </QueryClientProvider>
   );
