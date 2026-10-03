@@ -61,7 +61,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   const carregar = useCallback(async () => {
-    const { data: userData } = await supabase.auth.getUser();
+    // getSession lê do aparelho (rápido); getUser faria uma ida ao servidor.
+    const { data: sess } = await supabase.auth.getSession();
+    const userData = { user: sess.session?.user ?? null };
     const uid = userData.user?.id;
     if (!uid) { setDb(VAZIO); setMeId(""); setReady(true); return; }
     setMeId(uid);
@@ -127,13 +129,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { carregar(); }, [carregar]);
 
-  // Recarrega os dados quando o usuário entra na conta (sem recarregar a página).
+  // Recarrega só quando a conta muda de verdade. O Supabase dispara SIGNED_IN
+  // também ao voltar para a aba / renovar a sessão — antes isso apagava tudo.
+  const uidAtual = useRef<string>("");
+  useEffect(() => { uidAtual.current = meId; }, [meId]);
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") { setDb(VAZIO); setMeId(""); return; }
-      // setTimeout evita travar o Supabase ao chamar auth dentro do próprio evento.
-      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
-        setDb(VAZIO);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") { uidAtual.current = ""; setDb(VAZIO); setMeId(""); return; }
+      const novo = session?.user?.id ?? "";
+      if ((event === "SIGNED_IN" || event === "USER_UPDATED") && novo && novo !== uidAtual.current) {
+        const trocou = uidAtual.current !== "";
+        uidAtual.current = novo;
+        if (trocou) setDb(VAZIO);
         setTimeout(() => { carregar(); }, 0);
       }
     });
