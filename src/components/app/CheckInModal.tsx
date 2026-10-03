@@ -8,13 +8,16 @@ export function CheckInModal({ open, onClose }: { open: boolean; onClose: () => 
   const { addCheckIn } = useStore();
   const [f, setF] = useState({ valor: "", horas: "", texto: "", deuCerto: "", deuErrado: "" });
   const [foto, setFoto] = useState<string | undefined>();
+  const [arquivo, setArquivo] = useState<File | undefined>();
   const [erro, setErro] = useState("");
   if (!open) return null;
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
 
   const onFile = (file?: File) => {
     if (!file) return;
-    if (file.size > 3 * 1024 * 1024) return setErro("A imagem deve ter até 3 MB.");
+    if (file.size > 5 * 1024 * 1024) return setErro("A imagem deve ter até 5 MB.");
+    if (!file.type.startsWith("image/")) return setErro("Envie uma imagem.");
+    setArquivo(file);
     const r = new FileReader();
     r.onload = () => setFoto(r.result as string);
     r.readAsDataURL(file);
@@ -32,9 +35,9 @@ export function CheckInModal({ open, onClose }: { open: boolean; onClose: () => 
       ...(h ? { horas: h } : {}),
       ...(f.deuCerto.trim() ? { deuCerto: f.deuCerto.trim().slice(0, 300) } : {}),
       ...(f.deuErrado.trim() ? { deuErrado: f.deuErrado.trim().slice(0, 300) } : {}),
-      ...(foto ? { foto } : {}),
+      ...(foto ? { foto, arquivo } : {}),
     });
-    setF({ valor: "", horas: "", texto: "", deuCerto: "", deuErrado: "" }); setFoto(undefined); setErro("");
+    setF({ valor: "", horas: "", texto: "", deuCerto: "", deuErrado: "" }); setFoto(undefined); setArquivo(undefined); setErro("");
     onClose();
   };
 

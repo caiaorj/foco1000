@@ -24,6 +24,7 @@ function AuthPage() {
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [esqueci, setEsqueci] = useState(false);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -35,6 +36,13 @@ function AuthPage() {
     }
     setCarregando(true);
     try {
+      if (esqueci) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+        if (error) throw error;
+        setAviso("Se esse e-mail estiver cadastrado, você vai receber um link para criar uma nova senha.");
+        setEsqueci(false);
+        return;
+      }
       if (modo === "entrar") {
         const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
         if (error) throw error;
@@ -68,7 +76,7 @@ function AuthPage() {
           Foco <span className="text-accent">Mil Reais</span>
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Accountability diário até os primeiros R$ 1.000 faturados.
+          Mostre todo dia o que você fez até faturar seus primeiros R$ 1.000.
         </p>
 
         <div className="mt-6 grid grid-cols-2 border border-border font-mono text-xs uppercase tracking-wider">
@@ -76,7 +84,7 @@ function AuthPage() {
             <button
               key={m}
               type="button"
-              onClick={() => { setModo(m); setErro(null); setAviso(null); }}
+              onClick={() => { setModo(m); setEsqueci(false); setErro(null); setAviso(null); }}
               className={`py-2.5 ${modo === m ? "bg-primary font-semibold text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
               {m === "entrar" ? "Entrar" : "Cadastrar"}
@@ -110,8 +118,11 @@ function AuthPage() {
               className="w-full border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
-          <div>
-            <label className="label-mono mb-1.5 block" htmlFor="senha">Senha</label>
+          {!esqueci && <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="label-mono block" htmlFor="senha">Senha</label>
+              {modo === "entrar" && <button type="button" onClick={() => { setEsqueci(true); setErro(null); setAviso(null); }} className="text-xs text-muted-foreground underline hover:text-foreground">Esqueci minha senha</button>}
+            </div>
             <div className="relative">
               <input
                 id="senha"
@@ -133,7 +144,8 @@ function AuthPage() {
                 {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-          </div>
+          </div>}
+          {esqueci && <p className="text-sm text-muted-foreground">Digite seu e-mail e enviaremos um link para criar uma nova senha. <button type="button" onClick={() => setEsqueci(false)} className="underline">Voltar</button></p>}
           {modo === "cadastrar" && (
             <div>
               <label className="label-mono mb-1.5 block" htmlFor="confirmar-senha">Confirmar senha</label>
@@ -174,7 +186,7 @@ function AuthPage() {
             disabled={carregando}
             className="w-full bg-primary px-4 py-3 text-xs font-bold uppercase tracking-wide text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
-            {carregando ? "Aguarde…" : modo === "entrar" ? "Entrar" : "Criar conta"}
+            {carregando ? "Aguarde…" : esqueci ? "Enviar link" : modo === "entrar" ? "Entrar" : "Criar conta"}
           </button>
         </form>
       </div>

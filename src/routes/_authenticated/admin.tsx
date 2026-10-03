@@ -25,7 +25,7 @@ const btn = "bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wide te
 const vazio = { titulo: "", tipo: "curso", descricao: "", link: "", capa: "", publicado: true };
 
 function Admin() {
-  const { isAdmin, ready, materiais, live, membros, checkins, recarregar } = useStore();
+  const { isAdmin, ready, materiais, live, membros, checkins, recarregar, meId, removerParticipante } = useStore();
   const [form, setForm] = useState(vazio);
   const [editId, setEditId] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
@@ -127,6 +127,23 @@ function Admin() {
           <button className={`${btn} justify-self-start`}>Salvar aviso</button>
         </form>
       </Card>
+
+      <div className="space-y-2">
+        <span className="label-mono">Participantes</span>
+        <p className="text-xs text-muted-foreground">Para apagar um check-in, use o ícone de lixeira no próprio post do feed.</p>
+        {membros.map((m) => (
+          <Card key={m.id} className="flex items-center gap-3 p-3">
+            <div className="min-w-0 flex-1">
+              <Link to="/perfil/$id" params={{ id: m.id }} className="truncate font-semibold hover:underline">{m.nome}</Link>
+              <p className="label-mono !text-[10px]">{checkins.filter((c) => c.membroId === m.id).length} check-ins</p>
+            </div>
+            {m.id !== meId && (
+              <button onClick={() => { if (confirm(`Remover ${m.nome} do desafio? A conta e todos os check-ins serão apagados.`)) removerParticipante(m.id); }}
+                title="Remover participante" className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+            )}
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

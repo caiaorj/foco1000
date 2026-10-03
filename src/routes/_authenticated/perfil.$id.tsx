@@ -33,6 +33,7 @@ function Perfil() {
           <div>
             <p className="label-mono">Diário de bordo</p>
             <h1 className="font-display text-2xl font-semibold">{r.negocio.nome}</h1>
+            {r.total >= r.negocio.meta && <span className="mt-1 inline-block bg-primary px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-primary-foreground">★ Meta de {brl(r.negocio.meta)} batida</span>}
             <p className="text-sm text-muted-foreground">{r.membro.nome} · {r.negocio.nicho}</p>
           </div>
         </div>
