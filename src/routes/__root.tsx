@@ -194,7 +194,7 @@ function RootComponent() {
     });
     return () => subscription.unsubscribe();
   }, [router, queryClient]);
-  const ehAuth = router.state.location.pathname === "/auth";
+  const ehAuth = router.state.location.pathname === "/auth" || router.state.location.pathname === "/reset-password";
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
