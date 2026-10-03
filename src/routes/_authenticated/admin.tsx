@@ -44,13 +44,13 @@ function Admin() {
 
   async function salvarMaterial(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.titulo.trim()) return toast.error("Dê um título à matéria.");
+    if (!form.titulo.trim()) { toast.error("Dê um título à matéria."); return; }
     setSalvando(true);
     const { error } = editId
       ? await sb.from("materials").update(form).eq("id", editId)
       : await sb.from("materials").insert(form);
     setSalvando(false);
-    if (error) return toast.error("Não foi possível salvar.");
+    if (error) { toast.error("Não foi possível salvar."); return; }
     toast.success(editId ? "Matéria atualizada." : "Matéria publicada.");
     setForm(vazio); setEditId(null); recarregar();
   }
@@ -69,7 +69,7 @@ function Admin() {
   async function salvarAviso(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await sb.from("live_settings").upsert({ id: 1, ...aviso });
-    if (error) return toast.error("Não foi possível salvar o aviso.");
+    if (error) { toast.error("Não foi possível salvar o aviso."); return; }
     toast.success("Aviso atualizado."); recarregar();
   }
 
