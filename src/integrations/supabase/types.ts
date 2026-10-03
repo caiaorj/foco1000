@@ -14,7 +14,187 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      businesses: {
+        Row: {
+          created_at: string
+          descricao: string
+          id: string
+          meta: number
+          nicho: string
+          nome: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string
+          id?: string
+          meta?: number
+          nicho?: string
+          nome?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string
+          id?: string
+          meta?: number
+          nicho?: string
+          nome?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checkins: {
+        Row: {
+          created_at: string
+          deu_certo: string | null
+          deu_errado: string | null
+          foto: string | null
+          horas: number | null
+          id: string
+          texto: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          deu_certo?: string | null
+          deu_errado?: string | null
+          foto?: string | null
+          horas?: number | null
+          id?: string
+          texto: string
+          user_id: string
+          valor?: number
+        }
+        Update: {
+          created_at?: string
+          deu_certo?: string | null
+          deu_errado?: string | null
+          foto?: string | null
+          horas?: number | null
+          id?: string
+          texto?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          checkin_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          checkin_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          checkin_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_checkin_id_fkey"
+            columns: ["checkin_id"]
+            isOneToOne: false
+            referencedRelation: "checkins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          nome?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reactions: {
+        Row: {
+          checkin_id: string
+          created_at: string
+          id: string
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          checkin_id: string
+          created_at?: string
+          id?: string
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          checkin_id?: string
+          created_at?: string
+          id?: string
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_checkin_id_fkey"
+            columns: ["checkin_id"]
+            isOneToOne: false
+            referencedRelation: "checkins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
