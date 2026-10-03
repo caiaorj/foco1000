@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { toast } from "sonner";
 
 // Os tipos gerados do banco são atualizados quando o SQL de setup é aplicado;
 // até lá, usamos o cliente sem tipagem estrita nas tabelas.
