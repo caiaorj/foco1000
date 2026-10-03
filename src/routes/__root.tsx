@@ -140,6 +140,7 @@ function Header() {
   }
   const fmt = (v: number) => "R$ " + v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
   return (
+    <>
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto max-w-3xl px-4 pt-4">
         <div className="flex items-center gap-3">
@@ -176,12 +177,13 @@ function Header() {
           )}
         </nav>
       </div>
-      <button onClick={() => setOpen(true)} aria-label="Novo check-in"
-        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-40 inline-flex h-14 items-center gap-2 bg-primary px-5 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow-lg sm:hidden">
-        <Plus className="h-5 w-5" /> Check-in
-      </button>
-      <CheckInModal open={open} onClose={() => setOpen(false)} />
     </header>
+    <button onClick={() => setOpen(true)} aria-label="Novo check-in"
+      className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-40 inline-flex h-14 items-center gap-2 bg-primary px-5 text-xs font-bold uppercase tracking-wide text-primary-foreground shadow-lg sm:hidden">
+      <Plus className="h-5 w-5" /> Check-in
+    </button>
+    <CheckInModal open={open} onClose={() => setOpen(false)} />
+    </>
   );
 }
 
