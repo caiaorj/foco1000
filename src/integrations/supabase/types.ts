@@ -198,6 +198,24 @@ export type Database = {
         }
         Relationships: []
       }
+      page_visits: {
+        Row: {
+          id: number
+          ultima_visita: string | null
+          visitas: number
+        }
+        Insert: {
+          id?: number
+          ultima_visita?: string | null
+          visitas?: number
+        }
+        Update: {
+          id?: number
+          ultima_visita?: string | null
+          visitas?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -292,6 +310,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      registrar_visita: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
