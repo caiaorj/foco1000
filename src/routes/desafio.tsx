@@ -64,6 +64,10 @@ const PASSOS = [
 ];
 
 function DesafioPage() {
+  useEffect(() => {
+    void supabase.rpc("registrar_visita");
+  }, []);
+
   return (
     <main className="mx-auto w-full max-w-2xl px-4 pb-24 pt-10 sm:pt-14">
       <p className="label-mono text-center">Desafio em execução</p>
