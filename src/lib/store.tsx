@@ -39,7 +39,7 @@ const LIVE: Live = {
 
 const VAZIO: DB = { membros: [], negocios: [], checkins: [], favoritos: [], live: LIVE, materiais: [], isAdmin: false };
 
-type NovoCheckIn = { texto: string; valor: number; horas?: number; deuCerto?: string; deuErrado?: string; foto?: string };
+type NovoCheckIn = { texto: string; valor: number; horas?: number; deuCerto?: string; deuErrado?: string; foto?: string; arquivo?: File | undefined };
 
 type Store = DB & {
   ready: boolean;
@@ -49,6 +49,8 @@ type Store = DB & {
   toggleFavorito: (id: string) => void;
   updateNegocio: (n: Partial<Negocio>) => void;
   recarregar: () => void;
+  removerCheckIn: (id: string) => Promise<void>;
+  removerParticipante: (id: string) => Promise<void>;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -75,6 +77,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sb.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
     ]);
 
+    const caminhos = (checkins.data ?? []).map((c) => c.foto).filter((f): f is string => !!f && !/^(https?:|data:)/.test(f));
+    const urls = new Map<string, string>();
+    if (caminhos.length) {
+      const { data: assinadas } = await sb.storage.from("checkins").createSignedUrls(caminhos, 60 * 60 * 24);
+      for (const a of assinadas ?? []) if (a.path && a.signedUrl) urls.set(a.path, a.signedUrl);
+    }
+
     const reacoesPorCheckin = new Map<string, { cont: Record<Reacao, number>; minhas: Reacao[] }>();
     for (const r of reacoes.data ?? []) {
       const tipo = r.tipo as Reacao;
@@ -95,7 +104,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return {
           id: c.id, membroId: c.user_id, data: c.created_at, texto: c.texto,
           deuCerto: c.deu_certo ?? undefined, deuErrado: c.deu_errado ?? undefined,
-          valor: Number(c.valor) || 0, horas: c.horas != null ? Number(c.horas) : undefined, foto: c.foto ?? undefined,
+          valor: Number(c.valor) || 0, horas: c.horas != null ? Number(c.horas) : undefined, foto: c.foto ? (urls.get(c.foto) ?? (/^(https?:|data:)/.test(c.foto) ? c.foto : undefined)) : undefined,
           reacoes: r?.cont ?? { palmas: 0, bora: 0, executou: 0 }, minhas: r?.minhas ?? [],
         };
       }),
@@ -121,17 +130,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const addCheckIn = useCallback((c: NovoCheckIn) => {
     if (!meId) return;
+    const { arquivo, ...resto } = c;
     const tempId = `tmp-${Date.now()}`;
     const novo: CheckIn = {
       id: tempId, membroId: meId, data: new Date().toISOString(),
-      reacoes: { palmas: 0, bora: 0, executou: 0 }, minhas: [], ...c,
+      reacoes: { palmas: 0, bora: 0, executou: 0 }, minhas: [], ...resto,
     };
     setDb((d) => ({ ...d, checkins: [novo, ...d.checkins] }));
-    sb.from("checkins").insert({
-      user_id: meId, texto: c.texto, valor: c.valor,
-      horas: c.horas ?? null, deu_certo: c.deuCerto || null, deu_errado: c.deuErrado || null, foto: c.foto || null,
-    }).then(({ error }) => { if (error) console.error(error); carregar(); });
+    (async () => {
+      let foto: string | null = null;
+      if (arquivo) {
+        const ext = (arquivo.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+        const caminho = `${meId}/${Date.now()}.${ext}`;
+        const { error: upErr } = await sb.storage.from("checkins").upload(caminho, arquivo, { contentType: arquivo.type });
+        if (upErr) toast.error("A foto não foi enviada. O relato foi salvo sem ela.");
+        else foto = caminho;
+      }
+      const { error } = await sb.from("checkins").insert({
+        user_id: meId, texto: c.texto, valor: c.valor,
+        horas: c.horas ?? null, deu_certo: c.deuCerto || null, deu_errado: c.deuErrado || null, foto,
+      });
+      if (error) toast.error("Não foi possível salvar o check-in.");
+      carregar();
+    })();
   }, [meId, carregar]);
+
+  const removerCheckIn = useCallback(async (id: string) => {
+    const { error } = await sb.from("checkins").delete().eq("id", id);
+    if (error) toast.error("Não foi possível apagar.");
+    else { setDb((d) => ({ ...d, checkins: d.checkins.filter((x) => x.id !== id) })); toast.success("Check-in apagado."); }
+  }, []);
+
+  const removerParticipante = useCallback(async (id: string) => {
+    const { error } = await sb.rpc("admin_remover_participante", { _user_id: id });
+    if (error) toast.error("Não foi possível remover o participante.");
+    else { toast.success("Participante removido."); carregar(); }
+  }, [carregar]);
 
   const toggleReacao = useCallback(async (id: string, r: Reacao) => {
     if (id.startsWith("tmp-")) return;
@@ -174,8 +208,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [meId, carregar]);
 
   const value = useMemo(
-    () => ({ ...db, ready, meId, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, recarregar: carregar }),
-    [db, ready, meId, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, carregar],
+    () => ({ ...db, ready, meId, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, recarregar: carregar, removerCheckIn, removerParticipante }),
+    [db, ready, meId, addCheckIn, toggleReacao, toggleFavorito, updateNegocio, carregar, removerCheckIn, removerParticipante],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
