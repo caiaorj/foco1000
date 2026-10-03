@@ -147,11 +147,8 @@ function Header() {
             <span className="label-mono block">Desafio em execução</span>
             <span className="block truncate font-display text-lg font-semibold sm:text-xl">Foco <span className="text-accent">Mil Reais</span></span>
           </Link>
-          <div className="ml-auto hidden text-right sm:block">
-            <span className="label-mono block">OLÁ{primeiroNome ? "," : ""}</span>
-            <span className="num text-sm">{primeiroNome || "bem-vindo(a)"}</span>
-          </div>
-          <div className="ml-auto shrink-0 text-right sm:ml-0">
+          <div className="ml-auto shrink-0 text-right">
+
             <span className="label-mono block">Sua meta</span>
             <span className="num text-sm"><span className="text-accent">{fmt(total)}</span> / {fmt(meta)}</span>
           </div>
