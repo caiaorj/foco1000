@@ -102,6 +102,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { carregar(); }, [carregar]);
 
+  // Recarrega os dados quando o usuário entra na conta (sem recarregar a página).
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") carregar();
+    });
+    return () => subscription.unsubscribe();
+  }, [carregar]);
+
   const addCheckIn = useCallback((c: NovoCheckIn) => {
     if (!meId) return;
     const tempId = `tmp-${Date.now()}`;
