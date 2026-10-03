@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { brl, CURRENT_USER_ID, useParticipantes } from "@/lib/store";
+import { brl, useParticipantes, useStore } from "@/lib/store";
 import { AnnouncementBanner, Avatar, Progress, SectionTitle } from "@/components/app/ui-bits";
 
 export const Route = createFileRoute("/_authenticated/participantes")({
@@ -16,13 +16,14 @@ export const Route = createFileRoute("/_authenticated/participantes")({
 
 function Participantes() {
   const lista = useParticipantes();
+  const { meId } = useStore();
   return (
     <div className="space-y-6">
       <AnnouncementBanner />
       <SectionTitle title="Participantes & negócios" meta={`${lista.length} projetos ativos`} />
       <div className="grid gap-3 sm:grid-cols-2">
         {lista.map((r) => (
-          <Link key={r.membro.id} to={r.membro.id === CURRENT_USER_ID ? "/negocio" : "/perfil/$id"} params={{ id: r.membro.id }}
+          <Link key={r.membro.id} to={r.membro.id === meId ? "/negocio" : "/perfil/$id"} params={{ id: r.membro.id }}
             className="group border border-border bg-card p-4 hover:border-foreground">
             <div className="flex items-center gap-3">
               <Avatar nome={r.membro.nome} />
