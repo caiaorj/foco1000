@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { brl, totalDe, useRanking, useStore } from "@/lib/store";
+import { brl, useRanking, useStore } from "@/lib/store";
 import { Link } from "@tanstack/react-router";
 import { AnnouncementBanner, CheckInPost, SectionTitle } from "@/components/app/ui-bits";
 
@@ -25,7 +25,6 @@ function Feed() {
   const campeoes = ranking.filter((r) => r.total >= r.negocio.meta && r.negocio.meta > 0);
   const meu = ranking.find((r) => r.membro.id === meId);
   const bati = !!meu && meu.total >= meu.negocio.meta;
-  void totalDe;
   return (
     <div className="space-y-6">
       <div>
