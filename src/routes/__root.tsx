@@ -149,6 +149,9 @@ function Header() {
           <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-primary-foreground hover:opacity-90">
             <Plus className="h-4 w-4" /> Novo check-in
           </button>
+          <button onClick={sair} aria-label="Sair" title="Sair" className="p-2 text-muted-foreground hover:text-foreground">
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
         <nav className="-mx-1 mt-3 flex gap-1 overflow-x-auto pb-3">
           {nav.map((n) => (
@@ -167,6 +170,15 @@ function Header() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, queryClient]);
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
