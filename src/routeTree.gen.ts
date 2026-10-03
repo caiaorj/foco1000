@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedFavoritosRouteImport } from './routes/_authenticated/favoritos'
+import { Route as AuthenticatedMateriasRouteImport } from './routes/_authenticated/materias'
 import { Route as AuthenticatedNegocioRouteImport } from './routes/_authenticated/negocio'
 import { Route as AuthenticatedParticipantesRouteImport } from './routes/_authenticated/participantes'
 import { Route as AuthenticatedRankingRouteImport } from './routes/_authenticated/ranking'
@@ -32,9 +34,19 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFavoritosRoute = AuthenticatedFavoritosRouteImport.update({
   id: '/favoritos',
   path: '/favoritos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMateriasRoute = AuthenticatedMateriasRouteImport.update({
+  id: '/materias',
+  path: '/materias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNegocioRoute = AuthenticatedNegocioRouteImport.update({
@@ -62,7 +74,9 @@ const AuthenticatedPerfilIdRoute = AuthenticatedPerfilIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/favoritos': typeof AuthenticatedFavoritosRoute
+  '/materias': typeof AuthenticatedMateriasRoute
   '/negocio': typeof AuthenticatedNegocioRoute
   '/participantes': typeof AuthenticatedParticipantesRoute
   '/ranking': typeof AuthenticatedRankingRoute
@@ -70,7 +84,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/favoritos': typeof AuthenticatedFavoritosRoute
+  '/materias': typeof AuthenticatedMateriasRoute
   '/negocio': typeof AuthenticatedNegocioRoute
   '/participantes': typeof AuthenticatedParticipantesRoute
   '/ranking': typeof AuthenticatedRankingRoute
@@ -81,7 +97,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/favoritos': typeof AuthenticatedFavoritosRoute
+  '/_authenticated/materias': typeof AuthenticatedMateriasRoute
   '/_authenticated/negocio': typeof AuthenticatedNegocioRoute
   '/_authenticated/participantes': typeof AuthenticatedParticipantesRoute
   '/_authenticated/ranking': typeof AuthenticatedRankingRoute
@@ -93,7 +111,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin'
     | '/favoritos'
+    | '/materias'
     | '/negocio'
     | '/participantes'
     | '/ranking'
@@ -101,7 +121,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/admin'
     | '/favoritos'
+    | '/materias'
     | '/negocio'
     | '/participantes'
     | '/ranking'
@@ -111,7 +133,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/favoritos'
+    | '/_authenticated/materias'
     | '/_authenticated/negocio'
     | '/_authenticated/participantes'
     | '/_authenticated/ranking'
@@ -147,11 +171,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/favoritos': {
       id: '/_authenticated/favoritos'
       path: '/favoritos'
       fullPath: '/favoritos'
       preLoaderRoute: typeof AuthenticatedFavoritosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/materias': {
+      id: '/_authenticated/materias'
+      path: '/materias'
+      fullPath: '/materias'
+      preLoaderRoute: typeof AuthenticatedMateriasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/negocio': {
@@ -186,7 +224,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedFavoritosRoute: typeof AuthenticatedFavoritosRoute
+  AuthenticatedMateriasRoute: typeof AuthenticatedMateriasRoute
   AuthenticatedNegocioRoute: typeof AuthenticatedNegocioRoute
   AuthenticatedParticipantesRoute: typeof AuthenticatedParticipantesRoute
   AuthenticatedRankingRoute: typeof AuthenticatedRankingRoute
@@ -195,7 +235,9 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedFavoritosRoute: AuthenticatedFavoritosRoute,
+  AuthenticatedMateriasRoute: AuthenticatedMateriasRoute,
   AuthenticatedNegocioRoute: AuthenticatedNegocioRoute,
   AuthenticatedParticipantesRoute: AuthenticatedParticipantesRoute,
   AuthenticatedRankingRoute: AuthenticatedRankingRoute,
