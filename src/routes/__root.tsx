@@ -131,8 +131,6 @@ function Header() {
   const [open, setOpen] = useState(false);
   const meta = negocios.find((n) => n.membroId === meId)?.meta ?? 1000;
   const total = totalDe(checkins, meId);
-  const nomeCompleto = membros.find((m) => m.id === meId)?.nome ?? "";
-  const primeiroNome = nomeCompleto.split(" ").filter(Boolean)[0] ?? "";
 
   async function sair() {
     await supabase.auth.signOut();
