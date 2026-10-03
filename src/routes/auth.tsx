@@ -111,17 +111,59 @@ function AuthPage() {
           </div>
           <div>
             <label className="label-mono mb-1.5 block" htmlFor="senha">Senha</label>
-            <input
-              id="senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-              minLength={6}
-              placeholder="Mínimo de 6 caracteres"
-              className="w-full border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-accent"
-            />
+            <div className="relative">
+              <input
+                id="senha"
+                type={mostrarSenha ? "text" : "password"}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+                minLength={6}
+                placeholder="Mínimo de 6 caracteres"
+                className="w-full border border-border bg-background px-3 py-2.5 pr-11 text-sm outline-none focus:border-accent"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarSenha((v) => !v)}
+                aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+              >
+                {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
+          {modo === "cadastrar" && (
+            <div>
+              <label className="label-mono mb-1.5 block" htmlFor="confirmar-senha">Confirmar senha</label>
+              <div className="relative">
+                <input
+                  id="confirmar-senha"
+                  type={mostrarSenha ? "text" : "password"}
+                  value={confirmarSenha}
+                  onChange={(e) => setConfirmarSenha(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="Repita a senha"
+                  className="w-full border border-border bg-background px-3 py-2.5 pr-11 text-sm outline-none focus:border-accent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha((v) => !v)}
+                  aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                  title={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                >
+                  {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {confirmarSenha.length > 0 && (
+                <p className={`mt-1.5 text-xs ${confirmarSenha === senha ? "text-accent" : "text-destructive"}`}>
+                  {confirmarSenha === senha ? "As senhas coincidem." : "As senhas não coincidem."}
+                </p>
+              )}
+            </div>
+          )}
 
           {erro && <p className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{erro}</p>}
           {aviso && <p className="border border-accent/40 bg-accent/10 px-3 py-2 text-sm">{aviso}</p>}
