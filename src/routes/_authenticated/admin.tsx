@@ -122,6 +122,8 @@ function Admin() {
           <input className={input} placeholder="Título da live" value={aviso.titulo} onChange={(e) => setAviso({ ...aviso, titulo: e.target.value })} />
           <input className={input} placeholder="Quando (ex.: Sexta, 9/10 · 19h30)" value={aviso.quando} onChange={(e) => setAviso({ ...aviso, quando: e.target.value })} />
           <input className={input} placeholder="Link da live" value={aviso.link} onChange={(e) => setAviso({ ...aviso, link: e.target.value })} />
+          <label className="block"><span className="label-mono">Meta do desafio (R$) — vale para todos</span>
+            <input type="number" min={1} className={input} value={aviso.meta ?? 1000} onChange={(e) => setAviso({ ...aviso, meta: Number(e.target.value) })} /></label>
           <button className={`${btn} justify-self-start`}>Salvar aviso</button>
         </form>
       </Card>
